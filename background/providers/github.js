@@ -1,5 +1,5 @@
 /**
- * TabFuse — GitHub Search Provider
+ * Searchlyst — GitHub Search Provider
  * Queries GitHub's public Search API
  */
 
@@ -12,7 +12,7 @@ export async function searchGitHub(query, maxResults = 5) {
     const res = await fetch(url, {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'TabFuse-Search-Extension'
+        'User-Agent': 'Searchlyst-Search-Extension'
       }
     });
 

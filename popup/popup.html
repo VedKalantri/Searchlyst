@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TabFuse — Multi-Source Search</title>
+  <title>Searchlyst — Multi-Source Search</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <!-- Top Editorial Header -->
     <header class="header">
       <div class="brand">
-        <div class="brand-title">TABFUSE</div>
+        <div class="brand-title">SEARCHLYST</div>
         <div class="brand-sub">MULTI-SOURCE SEARCH</div>
       </div>
       <div class="header-actions">
@@ -100,10 +100,20 @@
           <div class="empty-badge">RESEARCH WORKSTATION</div>
           <h1 class="empty-headline">Search once.<br>Explore everywhere.</h1>
           <p class="empty-desc">
-            TabFuse queries technical repositories, official documentation, community discussions, and conference videos in parallel.
+            Searchlyst queries technical repositories, official documentation, community discussions, and conference videos in parallel.
           </p>
         </div>
 
+        <!-- Recent Searches (Dynamic) -->
+        <div class="recent-searches-block hidden" id="recentSearchesBlock">
+          <div class="recent-header">
+            <span class="suggestions-label">RECENT SEARCHES</span>
+            <button id="clearHistoryBtn" class="btn-link text-muted">CLEAR</button>
+          </div>
+          <ul class="suggestions-list" id="recentSearchesList"></ul>
+        </div>
+
+        <!-- Suggested Queries -->
         <div class="suggestions-block">
           <div class="suggestions-label">SUGGESTED QUERIES</div>
           <ul class="suggestions-list" id="suggestionsList">

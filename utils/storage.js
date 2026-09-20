@@ -1,12 +1,12 @@
 /**
- * TabFuse Storage Adapter
+ * Searchlyst Storage Adapter
  * Abstracts chrome.storage.local with automatic fallback to localStorage for dev/testing.
  */
 
 import { DEFAULT_SETTINGS } from './constants.js';
 
-const STORAGE_KEY = 'tabfuse_settings';
-const RECENT_SEARCHES_KEY = 'tabfuse_recent_searches';
+const STORAGE_KEY = 'searchlyst_settings';
+const RECENT_SEARCHES_KEY = 'searchlyst_recent_searches';
 
 const isChromeStorageAvailable = () => {
   return typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local;
@@ -15,18 +15,19 @@ const isChromeStorageAvailable = () => {
 export async function getSettings() {
   if (isChromeStorageAvailable()) {
     return new Promise((resolve) => {
-      chrome.storage.local.get([STORAGE_KEY], (res) => {
-        if (chrome.runtime.lastError || !res[STORAGE_KEY]) {
+      chrome.storage.local.get([STORAGE_KEY, 'tabfuse_settings'], (res) => {
+        const found = res[STORAGE_KEY] || res['tabfuse_settings'];
+        if (chrome.runtime.lastError || !found) {
           resolve({ ...DEFAULT_SETTINGS });
         } else {
-          resolve({ ...DEFAULT_SETTINGS, ...res[STORAGE_KEY] });
+          resolve({ ...DEFAULT_SETTINGS, ...found });
         }
       });
     });
   }
 
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('tabfuse_settings');
     return raw ? { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } : { ...DEFAULT_SETTINGS };
   } catch {
     return { ...DEFAULT_SETTINGS };
@@ -56,15 +57,15 @@ export async function saveSettings(partial) {
 export async function getRecentSearches(limit = 6) {
   if (isChromeStorageAvailable()) {
     return new Promise((resolve) => {
-      chrome.storage.local.get([RECENT_SEARCHES_KEY], (res) => {
-        const list = res[RECENT_SEARCHES_KEY] || [];
+      chrome.storage.local.get([RECENT_SEARCHES_KEY, 'tabfuse_recent_searches'], (res) => {
+        const list = res[RECENT_SEARCHES_KEY] || res['tabfuse_recent_searches'] || [];
         resolve(list.slice(0, limit));
       });
     });
   }
 
   try {
-    const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+    const raw = localStorage.getItem(RECENT_SEARCHES_KEY) || localStorage.getItem('tabfuse_recent_searches');
     const list = raw ? JSON.parse(raw) : [];
     return list.slice(0, limit);
   } catch {

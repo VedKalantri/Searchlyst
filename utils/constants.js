@@ -1,5 +1,5 @@
 /**
- * TabFuse Constants & Source Registry
+ * Searchlyst Constants & Source Registry
  */
 
 export const SOURCES = {
@@ -53,7 +53,7 @@ export const DEFAULT_SETTINGS = {
   enabledSources: ['google', 'youtube', 'github', 'reddit', 'stackoverflow'],
   openInNewTab: true,
   groupTabs: true,
-  tabGroupName: 'TabFuse Search',
+  tabGroupName: 'Searchlyst Search',
   tabGroupColor: 'orange',
   maxResultsPerSource: 5,
   focusFirstResult: false

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "TabFuse — Multi-Source Search",
-  "short_name": "TabFuse",
+  "name": "Searchlyst — Multi-Source Search",
+  "short_name": "Searchlyst",
   "version": "1.0.0",
   "description": "Search once. Explore everywhere. High-density, unified search aggregation across developer documentation, repositories, discussions, and video.",
   "icons": {
@@ -18,7 +18,7 @@
       "48": "assets/icons/icon-48.png",
       "128": "assets/icons/icon-128.png"
     },
-    "default_title": "TabFuse (Search Workstation)"
+    "default_title": "Searchlyst (Search Workstation)"
   },
   "background": {
     "service_worker": "background/service-worker.js",
@@ -42,7 +42,7 @@
         "default": "Ctrl+Shift+F",
         "mac": "Command+Shift+F"
       },
-      "description": "Open TabFuse Workstation"
+      "description": "Open Searchlyst Workstation"
     }
   },
   "options_ui": {

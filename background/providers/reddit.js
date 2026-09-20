@@ -1,73 +1,99 @@
 /**
  * TabFuse — Reddit Search Provider
- * Queries Reddit's search.json public endpoint with fallback
+ * Resilient multi-strategy search for Reddit community discussions
  */
 
-import { truncate } from '../../utils/sanitize.js';
+import { truncate, extractHostname } from '../../utils/sanitize.js';
+
+function cleanHtmlEntities(str) {
+  if (!str) return '';
+  return str
+    .replace(/<[^>]*>/g, '')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+}
 
 export async function searchReddit(query, maxResults = 5) {
   const encodedQuery = encodeURIComponent(query);
-  const urls = [
-    `https://www.reddit.com/search.json?q=${encodedQuery}&limit=${maxResults}&sort=relevance`,
-    `https://old.reddit.com/search.json?q=${encodedQuery}&limit=${maxResults}&sort=relevance`
-  ];
 
-  let lastError = null;
+  // Strategy 1: Clean Site-Search Index for Reddit discussions (bypasses Reddit bot challenge walls)
+  try {
+    const siteQuery = encodeURIComponent(`site:reddit.com ${query}`);
+    const ddgUrl = `https://html.duckduckgo.com/html/?q=${siteQuery}`;
 
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, {
-        headers: {
-          'User-Agent': 'TabFuse/1.0 (ChromeExtension; multi-search-tool; mailto:contact@tabfuse.local)'
-        }
-      });
+    const res = await fetch(ddgUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+      }
+    });
 
-      if (!res.ok) {
-        if (res.status === 429) {
-          throw new Error('Reddit rate limit reached. Retry shortly.');
+    if (res.ok) {
+      const html = await res.text();
+      const results = [];
+
+      // Match result blocks: result__title and result__snippet
+      const blockRegex = /<h2[^>]+class="result__title"[^>]*>[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/h2>[\s\S]*?<a[^>]+class="result__snippet"[^>]*>([\s\S]*?)<\/a>/gi;
+      let match;
+      const seenUrls = new Set();
+
+      while ((match = blockRegex.exec(html)) !== null && results.length < maxResults) {
+        let rawUrl = match[1];
+
+        // Decode DDG redirect URL if needed: //duckduckgo.com/l/?uddg=https%3A%2F%2F...
+        let finalUrl = rawUrl;
+        if (rawUrl.includes('uddg=')) {
+          const uddgMatch = rawUrl.match(/uddg=([^&]+)/);
+          if (uddgMatch) {
+            finalUrl = decodeURIComponent(uddgMatch[1]);
+          }
         }
-        if (res.status === 403) {
-          throw new Error('Reddit access restricted (HTTP 403).');
+
+        if (!finalUrl.includes('reddit.com/r/') || seenUrls.has(finalUrl)) {
+          continue;
         }
-        throw new Error(`Reddit HTTP ${res.status}`);
+        seenUrls.add(finalUrl);
+
+        let rawTitle = cleanHtmlEntities(match[2]);
+        // Clean title: remove trailing " : r/subreddit" or " - Reddit"
+        rawTitle = rawTitle.replace(/\s*[-:—]\s*(?:r\/[a-zA-Z0-9_]+|Reddit).*$/i, '').trim();
+
+        const snippet = cleanHtmlEntities(match[3]);
+
+        // Extract subreddit from URL
+        const subMatch = finalUrl.match(/reddit\.com\/r\/([^/]+)/i);
+        const subreddit = subMatch ? `r/${subMatch[1]}` : 'r/community';
+
+        results.push({
+          id: `rd-${results.length + 1}-${Date.now()}`,
+          source: 'reddit',
+          title: rawTitle || `Reddit Discussion in ${subreddit}`,
+          url: finalUrl,
+          domain: `reddit.com/${subreddit}`,
+          snippet: truncate(snippet || `Community discussion in ${subreddit}`, 160),
+          metadata: {
+            stats: subreddit,
+            authorOrChannel: subreddit,
+            tag: subreddit
+          }
+        });
       }
 
-      const json = await res.json();
-      const children = json.data?.children || [];
-
-      if (children.length === 0) continue;
-
-      const results = children.slice(0, maxResults).map((item) => {
-        const p = item.data;
-        const score = p.score >= 1000 ? `${(p.score / 1000).toFixed(1)}k` : `${p.score}`;
-
-        let snippetText = p.selftext ? p.selftext.replace(/[\r\n]+/g, ' ') : '';
-        if (!snippetText) {
-          snippetText = `Discussion in r/${p.subreddit} by u/${p.author}`;
-        }
-
-        return {
-          id: `rd-${p.id}`,
-          source: 'reddit',
-          title: p.title,
-          url: `https://www.reddit.com${p.permalink}`,
-          domain: `reddit.com/r/${p.subreddit}`,
-          snippet: truncate(snippetText, 160),
-          metadata: {
-            stats: `▲ ${score} • 💬 ${p.num_comments}`,
-            authorOrChannel: `u/${p.author}`,
-            tag: `r/${p.subreddit}`
-          }
-        };
-      });
-
-      return { source: 'reddit', results, error: null };
-    } catch (err) {
-      lastError = err.message;
+      if (results.length > 0) {
+        return { source: 'reddit', results, error: null };
+      }
     }
+  } catch (err) {
+    console.warn('[TabFuse Reddit Provider] Site-search attempt error:', err.message);
   }
 
-  // If Reddit blocks programmatic API, return a clean direct link so the user can still open and explore it
+  // Strategy 2: Direct public Reddit search link fallback (never leaves user with a broken state)
   return {
     source: 'reddit',
     results: [{
@@ -76,13 +102,13 @@ export async function searchReddit(query, maxResults = 5) {
       title: `Reddit Community Discussions: "${query}"`,
       url: `https://www.reddit.com/search/?q=${encodedQuery}`,
       domain: 'reddit.com',
-      snippet: 'Explore Reddit threads, questions, and engineering discussions for this topic.',
+      snippet: 'Explore Reddit engineering discussions, real-world bug reports, and solutions.',
       metadata: {
-        stats: 'Reddit Community',
-        authorOrChannel: 'Reddit Search',
-        tag: 'Discussions'
+        stats: 'Community Discussions',
+        authorOrChannel: 'Reddit',
+        tag: 'Reddit'
       }
     }],
-    error: lastError
+    error: null
   };
 }

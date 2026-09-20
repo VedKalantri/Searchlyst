@@ -1,11 +1,11 @@
 /**
- * TabFuse Popup Workstation Controller
- * Full multi-source aggregation, progress checklist, editorial result rows,
- * and keyboard navigation.
+ * Searchlyst Popup Workstation Controller
+ * Production Edition: Multi-source search aggregation, real-time checklist,
+ * editorial indexing, keyboard navigation, copy shortcuts, and history.
  */
 
 import { SOURCES, SOURCE_ORDER, SAMPLE_QUERIES } from '../utils/constants.js';
-import { getSettings, saveSettings, addRecentSearch } from '../utils/storage.js';
+import { getSettings, saveSettings, getRecentSearches, addRecentSearch } from '../utils/storage.js';
 import { escapeHtml } from '../utils/sanitize.js';
 
 // Direct provider fallbacks for standalone preview testing
@@ -23,11 +23,12 @@ const LOCAL_PROVIDERS = {
   stackoverflow: searchStackOverflow
 };
 
-class TabFuseWorkstation {
+class SearchlystWorkstation {
   constructor() {
     this.settings = null;
     this.enabledSources = new Set();
     this.isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    this.isExtensionContext = !!(typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id);
 
     // Search & Result State
     this.isSearching = false;
@@ -53,7 +54,11 @@ class TabFuseWorkstation {
 
     // DOM Elements - Workstation Views
     this.emptyState = document.getElementById('emptyState');
+    this.recentSearchesBlock = document.getElementById('recentSearchesBlock');
+    this.recentSearchesList = document.getElementById('recentSearchesList');
+    this.clearHistoryBtn = document.getElementById('clearHistoryBtn');
     this.suggestionsList = document.getElementById('suggestionsList');
+
     this.resultsContainer = document.getElementById('resultsContainer');
     this.searchProgressCard = document.getElementById('searchProgressCard');
     this.progressTitle = document.getElementById('progressTitle');
@@ -76,6 +81,7 @@ class TabFuseWorkstation {
     this.applyTheme(this.settings.theme);
     this.renderSourcesGrid();
     this.renderSuggestions();
+    await this.renderRecentSearches();
     this.bindEvents();
 
     this.updateStatus('READY');
@@ -196,6 +202,43 @@ class TabFuseWorkstation {
     this.renderSourcesGrid();
   }
 
+  async renderRecentSearches() {
+    const recents = await getRecentSearches(4);
+    if (!recents || recents.length === 0) {
+      this.recentSearchesBlock.classList.add('hidden');
+      return;
+    }
+
+    this.recentSearchesBlock.classList.remove('hidden');
+    this.recentSearchesList.innerHTML = '';
+
+    recents.forEach(query => {
+      const li = document.createElement('li');
+      li.className = 'suggestion-item';
+      li.tabIndex = 0;
+      li.innerHTML = `
+        <span>"${escapeHtml(query)}"</span>
+        <span class="suggestion-arrow">→</span>
+      `;
+
+      const selectAndSearch = () => {
+        this.searchInput.value = query;
+        this.clearBtn.classList.remove('hidden');
+        this.executeSearch();
+      };
+
+      li.addEventListener('click', selectAndSearch);
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectAndSearch();
+        }
+      });
+
+      this.recentSearchesList.appendChild(li);
+    });
+  }
+
   renderSuggestions() {
     this.suggestionsList.innerHTML = '';
     SAMPLE_QUERIES.forEach((query) => {
@@ -242,6 +285,16 @@ class TabFuseWorkstation {
       this.showEmptyState();
     });
 
+    this.clearHistoryBtn?.addEventListener('click', async () => {
+      if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+        chrome.storage.local.remove(['searchlyst_recent_searches', 'tabfuse_recent_searches']);
+      }
+      localStorage.removeItem('searchlyst_recent_searches');
+      localStorage.removeItem('tabfuse_recent_searches');
+      this.recentSearchesBlock.classList.add('hidden');
+      this.flashStatus('HISTORY CLEARED');
+    });
+
     this.searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -255,7 +308,7 @@ class TabFuseWorkstation {
       }
     });
 
-    // Keyboard navigation for results
+    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -277,6 +330,9 @@ class TabFuseWorkstation {
       } else if (e.key === 'Enter' && this.selectedIndex >= 0 && document.activeElement !== this.searchInput) {
         e.preventDefault();
         this.openSelectedResult();
+      } else if ((e.key === 'c' || e.key === 'C') && this.selectedIndex >= 0 && document.activeElement !== this.searchInput) {
+        e.preventDefault();
+        this.copySelectedResult();
       }
     });
 
@@ -294,6 +350,7 @@ class TabFuseWorkstation {
     this.resultsContainer.classList.add('hidden');
     this.emptyState.classList.remove('hidden');
     this.selectedIndex = -1;
+    this.renderRecentSearches();
     this.updateStatus('READY');
   }
 
@@ -335,16 +392,16 @@ class TabFuseWorkstation {
     const startTime = Date.now();
 
     try {
-      let searchResponse;
+      let searchResponse = null;
 
-      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
-        // Query through Chrome Extension background service worker
+      // 1. Try Chrome Extension Background Service Worker (if running as installed extension)
+      if (this.isExtensionContext) {
         searchResponse = await new Promise((resolve) => {
           chrome.runtime.sendMessage(
             { type: 'EXECUTE_SEARCH', query, sources: sourcesToQuery, maxResults: 5 },
             (response) => {
               if (chrome.runtime.lastError || !response) {
-                resolve({ error: chrome.runtime.lastError?.message || 'Background service unreachable' });
+                resolve(null);
               } else {
                 resolve(response);
               }
@@ -353,8 +410,20 @@ class TabFuseWorkstation {
         });
       }
 
-      // If outside extension or background worker returned an error, run local provider queries
-      if (!searchResponse || searchResponse.error) {
+      // 2. If previewing on localhost development server, use the server-side API proxy to avoid browser CORS restrictions
+      if (!searchResponse) {
+        try {
+          const apiRes = await fetch(`/api/search?q=${encodeURIComponent(query)}&sources=${sourcesToQuery.join(',')}&limit=5`);
+          if (apiRes.ok) {
+            searchResponse = await apiRes.json();
+          }
+        } catch {
+          // Server API unreachable, proceed to local provider fallback
+        }
+      }
+
+      // 3. Fallback to direct client-side provider invocation
+      if (!searchResponse) {
         searchResponse = await this.executeLocalSearch(query, sourcesToQuery);
       }
 
@@ -370,21 +439,21 @@ class TabFuseWorkstation {
 
       this.updateStatus(`${this.results.length} RESULTS FOUND (${durationSec}s)`);
     } catch (err) {
-      console.error('[TabFuse] Search error:', err);
+      console.error('[Searchlyst] Search error:', err);
       this.isSearching = false;
       this.updateStatus('SEARCH FAILED', false);
-      this.renderErrorState(err.message);
     }
   }
 
-  /**
-   * Local Search execution for browser preview fallback
-   */
   async executeLocalSearch(query, sources) {
     const promises = sources.map(async (id) => {
       const provider = LOCAL_PROVIDERS[id];
       if (!provider) return { source: id, results: [], error: 'Provider not found' };
-      return provider(query, 5);
+      try {
+        return await provider(query, 5);
+      } catch (err) {
+        return { source: id, results: [], error: err.message };
+      }
     });
 
     const settled = await Promise.allSettled(promises);
@@ -489,13 +558,14 @@ class TabFuseWorkstation {
       ? this.results 
       : this.results.filter(r => r.source === this.activeFilter);
 
-    // If selected source had an error, render error card
-    if (this.activeFilter !== 'ALL' && this.sourceSummaries[this.activeFilter]?.error) {
+    // If selected source had an error and 0 results, render error card
+    if (this.activeFilter !== 'ALL' && this.sourceSummaries[this.activeFilter]?.error && filtered.length === 0) {
       const errCard = this.createErrorCard(this.activeFilter, this.sourceSummaries[this.activeFilter].error);
       this.resultsList.appendChild(errCard);
+      return;
     }
 
-    if (filtered.length === 0 && !this.sourceSummaries[this.activeFilter]?.error) {
+    if (filtered.length === 0) {
       const emptyItem = document.createElement('div');
       emptyItem.className = 'result-row';
       emptyItem.innerHTML = `
@@ -525,12 +595,21 @@ class TabFuseWorkstation {
         <p class="result-snippet">${escapeHtml(item.snippet)}</p>
         <div class="result-footer">
           <span class="result-meta-stats">${escapeHtml(item.metadata?.stats || '')}</span>
-          <span class="result-open-link">OPEN ↗</span>
+          <div class="result-actions">
+            <button class="btn-copy" title="Copy URL (Key C)">COPY</button>
+            <span class="result-open-link">OPEN ↗</span>
+          </div>
         </div>
       `;
 
+      const copyBtn = row.querySelector('.btn-copy');
+      copyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.copyUrlToClipboard(item.url, copyBtn);
+      });
+
       row.addEventListener('click', (e) => {
-        if (!e.target.closest('a')) {
+        if (!e.target.closest('.btn-copy')) {
           this.openUrl(item.url);
         }
       });
@@ -586,6 +665,30 @@ class TabFuseWorkstation {
     }
   }
 
+  copySelectedResult() {
+    const rows = this.resultsList.querySelectorAll('.result-row');
+    if (this.selectedIndex >= 0 && this.selectedIndex < rows.length) {
+      const url = rows[this.selectedIndex].dataset.url;
+      const copyBtn = rows[this.selectedIndex].querySelector('.btn-copy');
+      if (url) this.copyUrlToClipboard(url, copyBtn);
+    }
+  }
+
+  copyUrlToClipboard(url, btnEl = null) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (btnEl) {
+        const oldText = btnEl.textContent;
+        btnEl.textContent = 'COPIED!';
+        btnEl.style.color = 'var(--accent)';
+        setTimeout(() => {
+          btnEl.textContent = oldText;
+          btnEl.style.color = '';
+        }, 1200);
+      }
+      this.flashStatus('LINK COPIED TO CLIPBOARD', 1500);
+    });
+  }
+
   openFilteredInTabs() {
     const filtered = this.activeFilter === 'ALL' 
       ? this.results 
@@ -597,7 +700,7 @@ class TabFuseWorkstation {
   }
 
   openUrl(url, inBackground = false) {
-    if (typeof chrome !== 'undefined' && chrome.tabs) {
+    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
       chrome.tabs.create({ url, active: !inBackground });
     } else {
       window.open(url, '_blank');
@@ -617,7 +720,8 @@ class TabFuseWorkstation {
 
     this.updateStatus(`OPENING ${activeList.length} TABS...`);
 
-    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+    // 1. Inside Chrome Extension Context
+    if (this.isExtensionContext) {
       chrome.runtime.sendMessage({
         type: 'OPEN_TAB_GROUP',
         query,
@@ -626,14 +730,21 @@ class TabFuseWorkstation {
         if (res?.success) {
           this.updateStatus(`${activeList.length} TABS GROUPED`);
           setTimeout(() => window.close(), 700);
+        } else {
+          this.flashStatus('TAB GROUP FAILED');
         }
       });
-    } else {
-      activeList.forEach(id => {
-        window.open(SOURCES[id].searchUrl(query), '_blank');
-      });
-      this.updateStatus(`${activeList.length} TABS OPENED`);
+      return;
     }
+
+    // 2. Browser Preview Mode (http://localhost:3888)
+    activeList.forEach((id, idx) => {
+      setTimeout(() => {
+        window.open(SOURCES[id].searchUrl(query), '_blank');
+      }, idx * 100);
+    });
+
+    this.flashStatus('TABS LAUNCHED (NATIVE GROUPING REQUIRES EXTENSION TOOLBAR)');
   }
 
   openSettingsPage() {
@@ -652,7 +763,7 @@ class TabFuseWorkstation {
     }
   }
 
-  flashStatus(msg, duration = 2200) {
+  flashStatus(msg, duration = 3000) {
     this.updateStatus(msg);
     setTimeout(() => {
       this.updateStatus('READY');
@@ -661,5 +772,5 @@ class TabFuseWorkstation {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  new TabFuseWorkstation();
+  new SearchlystWorkstation();
 });

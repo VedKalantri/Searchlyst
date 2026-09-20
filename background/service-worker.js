@@ -1,5 +1,5 @@
 /**
- * TabFuse Background Service Worker
+ * Searchlyst Background Service Worker
  * Central Search Orchestrator & Tab Manager (Manifest V3)
  */
 
@@ -25,7 +25,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
     const current = await getSettings();
     await saveSettings({ ...DEFAULT_SETTINGS, ...current });
-    console.log('[TabFuse] Extension installed with default settings.');
+    console.log('[Searchlyst] Extension installed with default settings.');
   }
 });
 
@@ -36,7 +36,7 @@ async function handleSearch(query, sources = [], maxResults = 5) {
   const startTime = Date.now();
   const targetSources = sources.filter(s => !!PROVIDERS[s]);
 
-  console.log(`[TabFuse] Dispatching search: "${query}" across [${targetSources.join(', ')}]`);
+  console.log(`[Searchlyst] Dispatching search: "${query}" across [${targetSources.join(', ')}]`);
 
   // Run all providers concurrently with Promise.allSettled for strict error isolation
   const promises = targetSources.map(async (sourceId) => {
@@ -109,14 +109,14 @@ async function handleOpenTabGroup(query, sources = []) {
     if (chrome.tabGroups && createdTabIds.length > 0) {
       const groupId = await chrome.tabs.group({ tabIds: createdTabIds });
       await chrome.tabGroups.update(groupId, {
-        title: `TabFuse: ${query.slice(0, 18)}`,
+        title: `Searchlyst: ${query.slice(0, 18)}`,
         color: 'orange'
       });
     }
 
     return { success: true, tabCount: createdTabIds.length };
   } catch (err) {
-    console.error('[TabFuse] Tab group creation failed:', err);
+    console.error('[Searchlyst] Tab group creation failed:', err);
     return { success: false, error: err.message };
   }
 }
