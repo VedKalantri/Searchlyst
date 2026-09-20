@@ -1,16 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <!-- Swiss / Editorial Icon for TabFuse -->
-  <rect width="128" height="128" fill="#111113" rx="8" />
-  <!-- Hairline grid lines -->
-  <line x1="16" y1="64" x2="112" y2="64" stroke="#262629" stroke-width="1.5" />
-  <line x1="64" y1="16" x2="64" y2="112" stroke="#262629" stroke-width="1.5" />
-  <!-- Geometric "T" and "F" / Multi-source beam -->
-  <!-- Top bar -->
-  <rect x="24" y="28" width="80" height="12" fill="#EDEDEB" />
-  <!-- Central stem -->
-  <rect x="58" y="40" width="12" height="60" fill="#EDEDEB" />
-  <!-- Fuse / Source Aggregation Branch -->
-  <rect x="70" y="58" width="34" height="10" fill="#EDEDEB" />
-  <!-- Restrained Vermilion Accent Focal Dot -->
-  <circle cx="94" cy="92" r="8" fill="#F05023" />
+  <defs>
+    <!-- Crisp Swiss Architectural Grid Definition -->
+    <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#1F1F23" stroke-width="1" />
+    </pattern>
+  </defs>
+
+  <!-- Base Plate: Deep Technical Charcoal -->
+  <rect width="128" height="128" rx="18" fill="#111113" />
+  <rect width="128" height="128" rx="18" fill="url(#grid)" opacity="0.6" />
+
+  <!-- Outer Border Hairline -->
+  <rect x="1" y="1" width="126" height="126" rx="17" fill="none" stroke="#28282D" stroke-width="1.5" />
+
+  <!-- Architectural Geometric "S" Monogram (Searchlyst) -->
+  <!-- Top Horizontal Block -->
+  <rect x="30" y="26" width="68" height="12" rx="2" fill="#EDEDEB" />
+  
+  <!-- Upper Left Vertical Spine -->
+  <rect x="30" y="26" width="14" height="42" rx="2" fill="#EDEDEB" />
+  
+  <!-- Middle Cross-Beam -->
+  <rect x="30" y="58" width="68" height="12" rx="2" fill="#EDEDEB" />
+  
+  <!-- Lower Right Vertical Spine -->
+  <rect x="84" y="60" width="14" height="42" rx="2" fill="#EDEDEB" />
+  
+  <!-- Bottom Horizontal Block -->
+  <rect x="30" y="90" width="68" height="12" rx="2" fill="#EDEDEB" />
+
+  <!-- Precision Multi-Source Crosshairs -->
+  <line x1="18" y1="64" x2="26" y2="64" stroke="#55555C" stroke-width="2" stroke-linecap="round" />
+  <line x1="102" y1="64" x2="110" y2="64" stroke="#55555C" stroke-width="2" stroke-linecap="round" />
+  <line x1="64" y1="14" x2="64" y2="22" stroke="#55555C" stroke-width="2" stroke-linecap="round" />
+  <line x1="64" y1="106" x2="64" y2="114" stroke="#55555C" stroke-width="2" stroke-linecap="round" />
+
+  <!-- The Searchlyst Signature Focal Aperture (Restrained Electric Vermilion) -->
+  <circle cx="94" cy="32" r="6" fill="#F05023" />
 </svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80" width="420" height="80">
+  <!-- Swiss Editorial Horizontal Logo for Searchlyst -->
+  <rect width="420" height="80" fill="#111113" rx="8" />
+  
+  <!-- Icon Mark Plate (60x60) at x=12, y=10 -->
+  <g transform="translate(14, 10)">
+    <rect width="60" height="60" rx="10" fill="#18181C" stroke="#2A2A30" stroke-width="1" />
+    
+    <!-- Architectural "S" Block Monogram -->
+    <!-- Top Bar -->
+    <rect x="14" y="12" width="32" height="6" rx="1" fill="#EDEDEB" />
+    <!-- Upper Left -->
+    <rect x="14" y="12" width="7" height="20" rx="1" fill="#EDEDEB" />
+    <!-- Mid Bar -->
+    <rect x="14" y="27" width="32" height="6" rx="1" fill="#EDEDEB" />
+    <!-- Lower Right -->
+    <rect x="39" y="28" width="7" height="20" rx="1" fill="#EDEDEB" />
+    <!-- Bottom Bar -->
+    <rect x="14" y="42" width="32" height="6" rx="1" fill="#EDEDEB" />
+    
+    <!-- Vermilion Focal Dot -->
+    <circle cx="43" cy="15" r="3.5" fill="#F05023" />
+  </g>
+
+  <!-- Typography Wordmark -->
+  <!-- Product Title -->
+  <text x="88" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Geist', 'Segoe UI', sans-serif" font-size="22" font-weight="800" letter-spacing="2" fill="#EDEDEB">
+    SEARCHLYST
+  </text>
+  
+  <!-- Tagline / Descriptor -->
+  <text x="89" y="56" font-family="ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace" font-size="9" font-weight="600" letter-spacing="2.5" fill="#787882">
+    MULTI-SOURCE SEARCH AGGREGATOR
+  </text>
+
+  <!-- Hairline Accent Divider -->
+  <line x1="88" y1="44" x2="108" y2="44" stroke="#F05023" stroke-width="2" />
+</svg>
