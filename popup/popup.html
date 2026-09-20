@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabFuse — Multi-Source Search</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="workstation" id="app">
+    <!-- Top Editorial Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-title">TABFUSE</div>
+        <div class="brand-sub">MULTI-SOURCE SEARCH</div>
+      </div>
+      <div class="header-actions">
+        <span class="kbd-badge" title="Press Ctrl+K or / to focus search">
+          <span class="kbd-key" id="shortcutKey">⌘K</span>
+        </span>
+        <button id="themeToggle" class="btn-icon" aria-label="Toggle theme" title="Toggle theme (Light / Dark / System)">
+          <svg id="themeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        <button id="openSettings" class="btn-icon" aria-label="Settings" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search Section -->
+    <section class="search-section" aria-label="Search Input">
+      <div class="search-field-wrapper">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="What are you looking for?" 
+          autocomplete="off" 
+          spellcheck="false"
+          autofocus
+        />
+        <button id="clearSearch" class="btn-clear hidden" aria-label="Clear query" title="Clear">✕</button>
+      </div>
+
+      <div class="search-actions-bar">
+        <div class="search-action-left">
+          <button id="searchBtn" class="btn-primary" title="Execute multi-source search (Enter)">
+            <span class="btn-text">SEARCH</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div class="search-action-right">
+          <button id="openTabGroupBtn" class="btn-secondary" title="Open all selected sources in a Chrome Tab Group">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>OPEN IN TAB GROUP</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sources Grid Selector -->
+    <section class="sources-section" aria-label="Search Sources">
+      <div class="sources-header">
+        <span class="section-title">ACTIVE SOURCES</span>
+        <div class="sources-meta">
+          <span id="sourcesCounter" class="sources-counter">5/5 SELECTED</span>
+          <span class="divider">/</span>
+          <button id="toggleAllSources" class="btn-link">TOGGLE ALL</button>
+        </div>
+      </div>
+
+      <div class="sources-grid" id="sourcesGrid" role="group" aria-label="Selectable search sources">
+        <!-- Sources rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- Content Workspace: Dynamic Views -->
+    <main class="content-workspace" id="contentWorkspace">
+      <!-- Empty State View -->
+      <div class="empty-state" id="emptyState">
+        <div class="editorial-divider"></div>
+        <div class="empty-hero">
+          <div class="empty-badge">RESEARCH WORKSTATION</div>
+          <h1 class="empty-headline">Search once.<br>Explore everywhere.</h1>
+          <p class="empty-desc">
+            TabFuse queries technical repositories, official documentation, community discussions, and conference videos in parallel.
+          </p>
+        </div>
+
+        <div class="suggestions-block">
+          <div class="suggestions-label">SUGGESTED QUERIES</div>
+          <ul class="suggestions-list" id="suggestionsList">
+            <!-- Rendered dynamically from constants -->
+          </ul>
+        </div>
+
+        <div class="editorial-footer-note">
+          <span>PRESS <kbd>ENTER</kbd> TO SEARCH</span>
+          <span>•</span>
+          <span><kbd>ESC</kbd> TO CLEAR</span>
+        </div>
+      </div>
+
+      <!-- Result Container (Scaffolded for Phase 2/3, hidden initially) -->
+      <div class="results-container hidden" id="resultsContainer">
+        <!-- Progress checklist & result items will live here -->
+      </div>
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer class="status-bar">
+      <div class="status-left">
+        <span class="status-indicator"></span>
+        <span id="statusText">READY</span>
+      </div>
+      <div class="status-right">
+        <span class="status-version">V1.0.0</span>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

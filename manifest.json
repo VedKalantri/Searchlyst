@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "TabFuse — Multi-Source Search",
+  "short_name": "TabFuse",
+  "version": "1.0.0",
+  "description": "Search once. Explore everywhere. High-density, unified search aggregation across developer documentation, repositories, discussions, and video.",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    },
+    "default_title": "TabFuse (Search Workstation)"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "tabGroups"
+  ],
+  "host_permissions": [
+    "*://*.google.com/*",
+    "*://*.youtube.com/*",
+    "https://api.github.com/*",
+    "https://*.reddit.com/*",
+    "https://api.stackexchange.com/*"
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Open TabFuse Workstation"
+    }
+  },
+  "options_ui": {
+    "page": "settings/settings.html",
+    "open_in_tab": true
+  }
+}

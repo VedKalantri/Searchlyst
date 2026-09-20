@@ -1,0 +1,12 @@
+# Chrome test profiles
+.chrome-dev-profile/
+
+# Node
+node_modules/
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

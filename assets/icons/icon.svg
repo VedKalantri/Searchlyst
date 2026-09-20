@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Swiss / Editorial Icon for TabFuse -->
+  <rect width="128" height="128" fill="#111113" rx="8" />
+  <!-- Hairline grid lines -->
+  <line x1="16" y1="64" x2="112" y2="64" stroke="#262629" stroke-width="1.5" />
+  <line x1="64" y1="16" x2="64" y2="112" stroke="#262629" stroke-width="1.5" />
+  <!-- Geometric "T" and "F" / Multi-source beam -->
+  <!-- Top bar -->
+  <rect x="24" y="28" width="80" height="12" fill="#EDEDEB" />
+  <!-- Central stem -->
+  <rect x="58" y="40" width="12" height="60" fill="#EDEDEB" />
+  <!-- Fuse / Source Aggregation Branch -->
+  <rect x="70" y="58" width="34" height="10" fill="#EDEDEB" />
+  <!-- Restrained Vermilion Accent Focal Dot -->
+  <circle cx="94" cy="92" r="8" fill="#F05023" />
+</svg>

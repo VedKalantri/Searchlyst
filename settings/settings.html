@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabFuse Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <header class="settings-header">
+      <div class="brand">
+        <span class="brand-name">TABFUSE</span>
+        <span class="brand-divider">/</span>
+        <span class="settings-title">PREFERENCES</span>
+      </div>
+      <span class="tagline">Search once. Explore everywhere.</span>
+    </header>
+
+    <main class="settings-body">
+      <!-- Search Sources Section -->
+      <section class="settings-section">
+        <div class="section-title-row">
+          <h2 class="section-heading">DEFAULT SEARCH SOURCES</h2>
+          <span class="section-caption">Active sources for new workstation sessions</span>
+        </div>
+        <div class="sources-list" id="sourcesSettingsList">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- Behavior Section -->
+      <section class="settings-section">
+        <div class="section-title-row">
+          <h2 class="section-heading">SEARCH BEHAVIOR</h2>
+          <span class="section-caption">Tab launching and workstation ergonomics</span>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-label">Group search tabs automatically</span>
+            <span class="setting-desc">Organize opened search tabs into a named Chrome Tab Group</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="groupTabsToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-label">Open results in background tabs</span>
+            <span class="setting-desc">Keep focus in current workspace when opening individual results</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="openNewTabToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Appearance Section -->
+      <section class="settings-section">
+        <div class="section-title-row">
+          <h2 class="section-heading">APPEARANCE</h2>
+          <span class="section-caption">Visual theme and contrast</span>
+        </div>
+
+        <div class="theme-options">
+          <label class="theme-card">
+            <input type="radio" name="themeRadio" value="system">
+            <span class="theme-card-content">
+              <span class="theme-name">System</span>
+              <span class="theme-sub">Match operating system</span>
+            </span>
+          </label>
+          <label class="theme-card">
+            <input type="radio" name="themeRadio" value="light">
+            <span class="theme-card-content">
+              <span class="theme-name">Light</span>
+              <span class="theme-sub">Editorial paper</span>
+            </span>
+          </label>
+          <label class="theme-card">
+            <input type="radio" name="themeRadio" value="dark">
+            <span class="theme-card-content">
+              <span class="theme-name">Dark</span>
+              <span class="theme-sub">Technical slate</span>
+            </span>
+          </label>
+        </div>
+      </section>
+    </main>
+
+    <footer class="settings-footer">
+      <span class="save-status" id="saveStatus">All settings saved locally</span>
+      <button id="closeBtn" class="btn-close">CLOSE</button>
+    </footer>
+  </div>
+
+  <script type="module" src="settings.js"></script>
+</body>
+</html>
