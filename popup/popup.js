@@ -203,7 +203,7 @@ class SearchlystWorkstation {
   }
 
   async renderRecentSearches() {
-    const recents = await getRecentSearches(4);
+    const recents = await getRecentSearches(2);
     if (!recents || recents.length === 0) {
       this.recentSearchesBlock.classList.add('hidden');
       return;
