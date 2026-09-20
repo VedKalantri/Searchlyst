@@ -1,48 +1,51 @@
 /**
- * TabFuse Settings — Swiss Editorial Design System
+ * Searchlyst Settings — Modern Editorial Design System
  */
 
 :root {
-  --bg-app: #F9F9F8;
+  --bg-app: #F7F7F5;
   --bg-surface: #FFFFFF;
-  --bg-surface-subtle: #F2F2EF;
-  --bg-surface-hover: #ECECE8;
+  --bg-surface-subtle: #EFEFEA;
+  --bg-surface-hover: #E8E8E2;
 
   --text-primary: #121213;
-  --text-secondary: #585854;
-  --text-muted: #8C8C87;
+  --text-secondary: #545450;
+  --text-muted: #848480;
 
-  --border-light: #E8E8E4;
-  --border-medium: #D0D0CA;
-  --border-strong: #121213;
+  --border-light: #E4E4DE;
+  --border-medium: #D0D0C8;
+  --border-strong: #909088;
 
   --accent: #E64516;
-  --accent-hover: #CC3A0E;
-  --accent-subtle: #FDF1ED;
+  --accent-hover: #D03B0E;
+  --accent-subtle: rgba(230, 69, 22, 0.08);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Geist", "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Consolas", Menlo, monospace;
 
-  --radius-sm: 2px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 [data-theme="dark"] {
-  --bg-app: #111113;
-  --bg-surface: #18181B;
-  --bg-surface-subtle: #202024;
-  --bg-surface-hover: #27272C;
+  --bg-app: #0D0D0F;
+  --bg-surface: #151518;
+  --bg-surface-subtle: #1C1C20;
+  --bg-surface-hover: #232328;
 
   --text-primary: #EDEDEB;
-  --text-secondary: #9C9C96;
-  --text-muted: #646460;
+  --text-secondary: #9E9EA0;
+  --text-muted: #646468;
 
-  --border-light: #242428;
-  --border-medium: #36363B;
-  --border-strong: #EDEDEB;
+  --border-light: #222228;
+  --border-medium: #303038;
+  --border-strong: #444450;
 
   --accent: #F05023;
-  --accent-hover: #FF663B;
-  --accent-subtle: #291814;
+  --accent-hover: #FF6236;
+  --accent-subtle: rgba(240, 80, 35, 0.12);
 }
 
 *, *::before, *::after {
@@ -67,6 +70,8 @@ body {
   max-width: 600px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .settings-header {
@@ -85,7 +90,7 @@ body {
 
 .brand-name {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.08em;
 }
 
@@ -150,7 +155,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 9px 14px;
   background-color: var(--bg-surface-subtle);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
@@ -166,7 +171,7 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--accent);
   width: 32px;
 }
 
@@ -186,7 +191,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border-light);
 }
 
@@ -210,8 +215,8 @@ body {
 .switch {
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 20px;
+  width: 38px;
+  height: 22px;
 }
 
 .switch input {
@@ -226,19 +231,19 @@ body {
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: var(--border-medium);
   transition: .15s;
-  border-radius: var(--radius-sm);
+  border-radius: 11px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
   left: 3px;
   bottom: 3px;
   background-color: var(--bg-surface);
   transition: .15s;
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
 }
 
 input:checked + .slider {
@@ -272,15 +277,15 @@ input:checked + .slider:before {
   flex-direction: column;
   gap: 2px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background-color: var(--bg-surface-subtle);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
-  transition: all 120ms ease;
+  transition: all 140ms ease;
 }
 
 .theme-card:hover .theme-card-content {
-  border-color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
 .theme-card input:checked + .theme-card-content {
@@ -300,7 +305,7 @@ input:checked + .slider:before {
 
 /* Footer */
 .settings-footer {
-  padding: 14px 24px;
+  padding: 16px 24px;
   border-top: 1px solid var(--border-light);
   display: flex;
   align-items: center;
@@ -314,7 +319,7 @@ input:checked + .slider:before {
 }
 
 .btn-close {
-  padding: 6px 14px;
+  padding: 7px 16px;
   background-color: var(--text-primary);
   border: 1px solid var(--text-primary);
   border-radius: var(--radius-sm);
@@ -323,6 +328,7 @@ input:checked + .slider:before {
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  transition: opacity 120ms;
 }
 
 .btn-close:hover {

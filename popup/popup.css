@@ -1,65 +1,68 @@
 /**
- * Searchlyst — Swiss Editorial Design System
- * Restrained palette, architectural hairline borders, high-density typography.
- * Zero gradients, zero neon, zero glassmorphism, zero floating blobs.
+ * Searchlyst — Modern Editorial Workstation Design System
+ * Refined geometry: 6px–8px modern rounded borders, intentional hierarchy,
+ * elegant surface contrast, and restrained electric vermilion accent.
  */
 
 :root {
-  /* Light Theme (Default Editorial Paper) */
-  --bg-app: #F9F9F8;
+  /* Light Theme */
+  --bg-app: #F7F7F5;
   --bg-surface: #FFFFFF;
-  --bg-surface-subtle: #F2F2EF;
-  --bg-surface-hover: #ECECE8;
-  --bg-surface-active: #E4E4DF;
+  --bg-surface-subtle: #EFEFEA;
+  --bg-surface-hover: #E8E8E2;
+  --bg-surface-active: #DFDFD8;
 
   --text-primary: #121213;
-  --text-secondary: #585854;
-  --text-muted: #8C8C87;
+  --text-secondary: #545450;
+  --text-muted: #848480;
   --text-inverse: #FFFFFF;
 
-  --border-light: #E8E8E4;
-  --border-medium: #D0D0CA;
-  --border-strong: #121213;
+  --border-light: #E4E4DE;
+  --border-medium: #D0D0C8;
+  --border-strong: #909088;
 
-  --accent: #E64516; /* Restrained Vermilion */
-  --accent-hover: #CC3A0E;
-  --accent-subtle: #FDF1ED;
-  --accent-border: #F39B82;
+  --accent: #E64516;
+  --accent-hover: #D03B0E;
+  --accent-subtle: rgba(230, 69, 22, 0.08);
+  --accent-border: rgba(230, 69, 22, 0.4);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Geist", "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Consolas", Menlo, monospace;
 
-  --radius-none: 0px;
-  --radius-sm: 2px;
-  --radius-md: 4px;
+  /* Modern Refined Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-card: 12px;
 
-  --trans-fast: 120ms ease;
+  --trans-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="dark"] {
-  /* Dark Theme (Charcoal / Editorial Technical Slate) */
-  --bg-app: #111113;
-  --bg-surface: #18181B;
-  --bg-surface-subtle: #202024;
-  --bg-surface-hover: #27272C;
-  --bg-surface-active: #303036;
+  /* Dark Theme */
+  --bg-app: #0D0D0F;
+  --bg-surface: #151518;
+  --bg-surface-subtle: #1C1C20;
+  --bg-surface-hover: #232328;
+  --bg-surface-active: #2B2B32;
 
   --text-primary: #EDEDEB;
-  --text-secondary: #9C9C96;
-  --text-muted: #646460;
-  --text-inverse: #111113;
+  --text-secondary: #9E9EA0;
+  --text-muted: #646468;
+  --text-inverse: #0D0D0F;
 
-  --border-light: #242428;
-  --border-medium: #36363B;
-  --border-strong: #EDEDEB;
+  --border-light: #222228;
+  --border-medium: #303038;
+  --border-strong: #444450;
 
-  --accent: #F05023; /* Electric Vermilion for Dark */
-  --accent-hover: #FF663B;
-  --accent-subtle: #291814;
-  --accent-border: #6B2918;
+  --accent: #F05023;
+  --accent-hover: #FF6236;
+  --accent-subtle: rgba(240, 80, 35, 0.12);
+  --accent-border: rgba(240, 80, 35, 0.45);
 }
 
-/* Reset & Box Sizing */
+/* Reset & Base */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -100,7 +103,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 14px 18px;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
 }
@@ -114,18 +117,19 @@ body {
 .brand-row {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .brand-logo-mark {
   flex-shrink: 0;
+  border-radius: 4px;
 }
 
 .brand-title {
   font-family: var(--font-sans);
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--text-primary);
   line-height: 1;
 }
@@ -137,7 +141,7 @@ body {
   letter-spacing: 0.12em;
   color: var(--text-muted);
   text-transform: uppercase;
-  margin-left: 23px;
+  margin-left: 24px;
 }
 
 .header-actions {
@@ -149,10 +153,10 @@ body {
 .kbd-badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 6px;
+  padding: 3px 7px;
   background-color: var(--bg-surface-subtle);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
@@ -163,20 +167,20 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background-color var(--trans-fast), color var(--trans-fast), border-color var(--trans-fast);
+  transition: all var(--trans-fast);
 }
 
 .btn-icon:hover {
   background-color: var(--bg-surface-hover);
   color: var(--text-primary);
-  border-color: var(--border-light);
+  border-color: var(--border-medium);
 }
 
 .btn-icon:active {
@@ -187,7 +191,7 @@ body {
    2. SEARCH SECTION
    ========================================================================== */
 .search-section {
-  padding: 14px 16px 12px 16px;
+  padding: 16px 18px 14px 18px;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
 }
@@ -201,17 +205,17 @@ body {
 
 .search-input {
   width: 100%;
-  height: 40px;
-  padding: 0 34px 0 12px;
+  height: 42px;
+  padding: 0 36px 0 14px;
   background-color: var(--bg-surface-subtle);
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13.5px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  transition: border-color var(--trans-fast), background-color var(--trans-fast);
+  transition: border-color var(--trans-fast), background-color var(--trans-fast), box-shadow var(--trans-fast);
   outline: none;
 }
 
@@ -221,17 +225,18 @@ body {
 }
 
 .search-input:hover {
-  border-color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
 .search-input:focus {
   border-color: var(--accent);
   background-color: var(--bg-surface);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .btn-clear {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   width: 22px;
@@ -245,10 +250,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-xs);
 }
 
 .btn-clear:hover {
   color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
 }
 
 /* Actions Bar below search input */
@@ -264,8 +271,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0 14px;
-  height: 32px;
+  padding: 0 16px;
+  height: 34px;
   background-color: var(--accent);
   border: 1px solid var(--accent);
   border-radius: var(--radius-sm);
@@ -275,7 +282,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.05em;
   cursor: pointer;
-  transition: background-color var(--trans-fast), border-color var(--trans-fast);
+  transition: background-color var(--trans-fast), transform var(--trans-fast);
 }
 
 .btn-primary:hover {
@@ -284,7 +291,7 @@ body {
 }
 
 .btn-primary:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .btn-arrow {
@@ -298,31 +305,31 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0 10px;
-  height: 32px;
-  background-color: transparent;
+  padding: 0 12px;
+  height: 34px;
+  background-color: var(--bg-surface-subtle);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   cursor: pointer;
   transition: all var(--trans-fast);
 }
 
 .btn-secondary:hover {
   background-color: var(--bg-surface-hover);
-  border-color: var(--text-secondary);
+  border-color: var(--border-strong);
   color: var(--text-primary);
 }
 
 /* ==========================================================================
-   3. SOURCE SELECTOR (Compact Rectangular Controls)
+   3. SOURCE SELECTOR (Modern Rounded Controls)
    ========================================================================== */
 .sources-section {
-  padding: 10px 16px 12px 16px;
+  padding: 12px 18px 14px 18px;
   background-color: var(--bg-surface-subtle);
   border-bottom: 1px solid var(--border-light);
 }
@@ -331,7 +338,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 }
 
 .section-title {
@@ -390,16 +397,16 @@ body {
 .sources-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
-/* Compact Rectangular Source Item */
+/* Modern Rounded Source Chip */
 .source-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 8px;
+  gap: 7px;
+  height: 33px;
+  padding: 0 10px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
@@ -409,18 +416,20 @@ body {
   font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: border-color var(--trans-fast), background-color var(--trans-fast), color var(--trans-fast);
+  transition: all var(--trans-fast);
   outline: none;
 }
 
 .source-btn:hover {
-  border-color: var(--text-secondary);
+  border-color: var(--border-strong);
   color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
 }
 
+/* Active Source State: Refined Vermilion Accent Border & Subtle Fill */
 .source-btn.active {
-  background-color: var(--bg-surface);
-  border-color: var(--border-strong);
+  background-color: var(--accent-subtle);
+  border-color: var(--accent-border);
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -434,7 +443,7 @@ body {
 }
 
 .source-btn.active .source-code {
-  color: var(--text-primary);
+  color: var(--accent);
 }
 
 .source-label {
@@ -444,15 +453,15 @@ body {
   text-overflow: ellipsis;
 }
 
-/* Restrained Indicator Dot */
+/* Modern Indicator Dot */
 .source-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  border: 1px solid var(--border-medium);
+  border: 1.5px solid var(--border-medium);
   background-color: transparent;
   flex-shrink: 0;
-  transition: background-color var(--trans-fast), border-color var(--trans-fast);
+  transition: all var(--trans-fast);
 }
 
 .source-btn.active .source-dot {
@@ -473,7 +482,7 @@ body {
 }
 
 .content-workspace::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .content-workspace::-webkit-scrollbar-track {
@@ -482,6 +491,7 @@ body {
 
 .content-workspace::-webkit-scrollbar-thumb {
   background: var(--border-medium);
+  border-radius: 3px;
 }
 
 .content-workspace::-webkit-scrollbar-thumb:hover {
@@ -490,14 +500,15 @@ body {
 
 /* Empty State */
 .empty-state {
-  padding: 16px 18px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
 }
 
 .editorial-divider {
   width: 24px;
-  height: 2px;
+  height: 2.5px;
+  border-radius: 1px;
   background-color: var(--accent);
   margin-bottom: 12px;
 }
@@ -563,14 +574,14 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .suggestion-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 8px;
+  padding: 7px 10px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
@@ -610,10 +621,10 @@ body {
 }
 
 .editorial-footer-note kbd {
-  padding: 1px 4px;
+  padding: 2px 5px;
   background-color: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-xs);
   color: var(--text-secondary);
   font-size: 9px;
 }
@@ -622,17 +633,17 @@ body {
    5. SEARCH PROGRESS CHECKLIST & STREAMING STATE
    ========================================================================== */
 .results-container {
-  padding: 12px 16px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 .search-progress-card {
-  padding: 10px 12px;
+  padding: 12px 14px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-medium);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 
 .progress-header {
@@ -661,7 +672,7 @@ body {
 .progress-checklist {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .checklist-row {
@@ -676,7 +687,7 @@ body {
 .checklist-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .checklist-badge {
@@ -716,19 +727,20 @@ body {
 
 .filter-bar-wrapper::-webkit-scrollbar-thumb {
   background: var(--border-medium);
+  border-radius: 2px;
 }
 
 .filter-bar {
   display: inline-flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .filter-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  height: 24px;
-  padding: 0 8px;
+  height: 26px;
+  padding: 0 9px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
@@ -741,7 +753,7 @@ body {
 }
 
 .filter-btn:hover {
-  border-color: var(--text-primary);
+  border-color: var(--border-strong);
   color: var(--text-primary);
 }
 
@@ -757,14 +769,12 @@ body {
 }
 
 /* ==========================================================================
-   7. EDITORIAL RESULTS LIST & ROWS
+   7. EDITORIAL RESULTS LIST & INDIVIDUAL CARDS
    ========================================================================== */
 .results-list {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  background-color: var(--border-light);
-  border: 1px solid var(--border-light);
+  gap: 8px;
 }
 
 .result-row {
@@ -773,19 +783,23 @@ body {
   gap: 6px;
   padding: 12px 14px;
   background-color: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color var(--trans-fast);
+  transition: all var(--trans-fast);
   position: relative;
   outline: none;
 }
 
 .result-row:hover {
   background-color: var(--bg-surface-hover);
+  border-color: var(--border-medium);
 }
 
 /* Keyboard navigation active selection border */
 .result-row.selected {
   background-color: var(--bg-surface-hover);
+  border-color: var(--accent);
   box-shadow: inset 3px 0 0 0 var(--accent);
 }
 
@@ -797,9 +811,9 @@ body {
 
 .result-source-tag {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--accent);
   text-transform: uppercase;
 }
@@ -830,8 +844,8 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-top: 2px;
-  padding-top: 6px;
-  border-top: 1px dotted var(--border-light);
+  padding-top: 7px;
+  border-top: 1px solid var(--border-light);
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--text-muted);
@@ -848,18 +862,21 @@ body {
 }
 
 .btn-copy {
-  background: none;
-  border: none;
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 9.5px;
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0 2px;
+  padding: 2px 6px;
+  transition: all var(--trans-fast);
 }
 
 .btn-copy:hover {
   color: var(--text-primary);
+  border-color: var(--border-medium);
 }
 
 .result-open-link {
@@ -878,12 +895,14 @@ body {
 
 /* Error Card inside Results */
 .result-error-card {
-  padding: 10px 12px;
+  padding: 10px 14px;
   background-color: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  border-left: 3px solid #E53E3E;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-left: 3px solid #E53E3E;
   gap: 8px;
 }
 
@@ -913,7 +932,7 @@ body {
 }
 
 .btn-retry {
-  padding: 4px 8px;
+  padding: 4px 9px;
   background-color: var(--bg-surface-subtle);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
@@ -922,11 +941,12 @@ body {
   font-weight: 600;
   cursor: pointer;
   color: var(--text-primary);
+  transition: all var(--trans-fast);
 }
 
 .btn-retry:hover {
   background-color: var(--bg-surface-hover);
-  border-color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 /* Results footer */
@@ -934,7 +954,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 0 10px 0;
+  padding: 6px 0 10px 0;
 }
 
 /* ==========================================================================
@@ -944,7 +964,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 16px;
+  padding: 7px 18px;
   background-color: var(--bg-surface);
   border-top: 1px solid var(--border-light);
   font-family: var(--font-mono);
@@ -959,9 +979,9 @@ body {
 }
 
 .status-indicator {
-  width: 5px;
-  height: 5px;
-  background-color: #38A169; /* Ready green dot */
+  width: 6px;
+  height: 6px;
+  background-color: #38A169;
   border-radius: 50%;
 }
 
