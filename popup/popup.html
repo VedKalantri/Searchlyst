@@ -118,16 +118,43 @@
         </div>
       </div>
 
-      <!-- Result Container (Scaffolded for Phase 2/3, hidden initially) -->
+      <!-- Result Container (Phase 2 & 3: Results & Streaming State) -->
       <div class="results-container hidden" id="resultsContainer">
-        <!-- Progress checklist & result items will live here -->
+        <!-- Status & Progress Checklist Banner -->
+        <div class="search-progress-card" id="searchProgressCard">
+          <div class="progress-header">
+            <span class="progress-title" id="progressTitle">SEARCHING SOURCES</span>
+            <span class="progress-timing" id="progressTiming"></span>
+          </div>
+          <div class="progress-checklist" id="progressChecklist">
+            <!-- Source checklist items (✓, ●, !) -->
+          </div>
+        </div>
+
+        <!-- Filter Tab Bar -->
+        <div class="filter-bar-wrapper hidden" id="filterBarWrapper">
+          <div class="filter-bar" id="filterBar" role="tablist">
+            <!-- Rendered filter tabs (ALL, GITHUB, REDDIT, etc.) -->
+          </div>
+        </div>
+
+        <!-- Editorial Results List -->
+        <div class="results-list" id="resultsList" role="feed">
+          <!-- Rendered result items or errors -->
+        </div>
+
+        <!-- Results Footer -->
+        <div class="results-footer" id="resultsFooter">
+          <button id="backToHomeBtn" class="btn-link">← BACK TO OVERVIEW</button>
+          <button id="openAllFilteredBtn" class="btn-link">OPEN ALL IN TABS ↗</button>
+        </div>
       </div>
     </main>
 
     <!-- Bottom Status Bar -->
     <footer class="status-bar">
       <div class="status-left">
-        <span class="status-indicator"></span>
+        <span class="status-indicator" id="statusIndicator"></span>
         <span id="statusText">READY</span>
       </div>
       <div class="status-right">

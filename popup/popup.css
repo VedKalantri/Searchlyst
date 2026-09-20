@@ -67,9 +67,9 @@
 }
 
 body {
-  width: 460px;
+  width: 480px;
   min-width: 380px;
-  max-width: 500px;
+  max-width: 520px;
   margin: 0;
   padding: 0;
   background-color: var(--bg-app);
@@ -87,7 +87,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: 590px;
+  max-height: 595px;
   overflow: hidden;
   background-color: var(--bg-app);
   border: 1px solid var(--border-light);
@@ -443,18 +443,17 @@ body {
 }
 
 /* ==========================================================================
-   4. CONTENT WORKSPACE & EDITORIAL EMPTY STATE
+   4. CONTENT WORKSPACE & SCROLLBAR
    ========================================================================== */
 .content-workspace {
   flex: 1;
-  min-height: 240px;
-  max-height: 380px;
+  min-height: 260px;
+  max-height: 390px;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--bg-app);
 }
 
-/* Custom Editorial Scrollbar */
 .content-workspace::-webkit-scrollbar {
   width: 5px;
 }
@@ -471,6 +470,7 @@ body {
   background: var(--text-muted);
 }
 
+/* Empty State */
 .empty-state {
   padding: 16px 18px;
   display: flex;
@@ -587,7 +587,7 @@ body {
 }
 
 /* ==========================================================================
-   5. RESULTS VIEW WIREFRAME (Prepared for Phase 2/3)
+   5. SEARCH PROGRESS CHECKLIST & STREAMING STATE
    ========================================================================== */
 .results-container {
   padding: 12px 16px;
@@ -596,8 +596,295 @@ body {
   gap: 12px;
 }
 
+.search-progress-card {
+  padding: 10px 12px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.progress-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+}
+
+.progress-timing {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.progress-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checklist-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+
+.checklist-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.checklist-badge {
+  font-weight: 700;
+  color: var(--text-primary);
+  width: 28px;
+}
+
+.checklist-status {
+  font-weight: 700;
+}
+
+.checklist-status.loading {
+  color: var(--accent);
+}
+
+.checklist-status.done {
+  color: #38A169;
+}
+
+.checklist-status.error {
+  color: #E53E3E;
+}
+
 /* ==========================================================================
-   6. BOTTOM STATUS BAR
+   6. FILTER TAB BAR
+   ========================================================================== */
+.filter-bar-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+.filter-bar-wrapper::-webkit-scrollbar {
+  height: 3px;
+}
+
+.filter-bar-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+}
+
+.filter-bar {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--trans-fast);
+}
+
+.filter-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.filter-btn.active {
+  background-color: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--bg-surface);
+}
+
+.filter-count {
+  opacity: 0.8;
+  font-size: 9px;
+}
+
+/* ==========================================================================
+   7. EDITORIAL RESULTS LIST & ROWS
+   ========================================================================== */
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background-color: var(--border-light);
+  border: 1px solid var(--border-light);
+}
+
+.result-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background-color: var(--bg-surface);
+  cursor: pointer;
+  transition: background-color var(--trans-fast);
+  position: relative;
+  outline: none;
+}
+
+.result-row:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+/* Keyboard navigation active selection border */
+.result-row.selected {
+  background-color: var(--bg-surface-hover);
+  box-shadow: inset 3px 0 0 0 var(--accent);
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.result-source-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.result-domain {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.result-title {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.result-snippet {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.result-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+  padding-top: 6px;
+  border-top: 1px dotted var(--border-light);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.result-meta-stats {
+  font-weight: 500;
+}
+
+.result-open-link {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.result-open-link:hover {
+  color: var(--accent);
+}
+
+/* Error Card inside Results */
+.result-error-card {
+  padding: 10px 12px;
+  background-color: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-left: 3px solid #E53E3E;
+  gap: 8px;
+}
+
+.error-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.error-source {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: #E53E3E;
+  letter-spacing: 0.08em;
+}
+
+.error-msg {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-retry {
+  padding: 4px 8px;
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.btn-retry:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--text-primary);
+}
+
+/* Results footer */
+.results-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 10px 0;
+}
+
+/* ==========================================================================
+   8. STATUS BAR
    ========================================================================== */
 .status-bar {
   display: flex;
