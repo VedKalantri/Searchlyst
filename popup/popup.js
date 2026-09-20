@@ -389,6 +389,15 @@ class SearchlystWorkstation {
 
     this.backToHomeBtn.addEventListener('click', () => this.showEmptyState());
     this.openAllFilteredBtn.addEventListener('click', () => this.openFilteredInTabs());
+
+    if (this.filterBarWrapper) {
+      this.filterBarWrapper.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          this.filterBarWrapper.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
+    }
   }
 
   showEmptyState() {
@@ -397,6 +406,7 @@ class SearchlystWorkstation {
     this.selectedIndex = -1;
     this.currentQuery = '';
     this.results = [];
+    this.activeFilter = 'ALL';
     clearLastSearchState();
     this.renderRecentSearches();
     this.updateStatus('READY');
@@ -430,6 +440,8 @@ class SearchlystWorkstation {
     this.isSearching = true;
     this.currentQuery = query;
     this.selectedIndex = -1;
+    // Always default to 'ALL' on any new search (unless single-source retry is requested)
+    this.activeFilter = targetSourceId || 'ALL';
     this.showResultsContainer();
     this.updateStatus('SEARCHING...', true);
     await addRecentSearch(query);
@@ -582,18 +594,10 @@ class SearchlystWorkstation {
     // "ALL" tab
     const allBtn = document.createElement('button');
     allBtn.className = `filter-btn ${this.activeFilter === 'ALL' ? 'active' : ''}`;
+    allBtn.dataset.filter = 'ALL';
     allBtn.innerHTML = `<span>ALL</span> <span class="filter-count">[${this.results.length}]</span>`;
     allBtn.addEventListener('click', () => {
-      this.activeFilter = 'ALL';
-      this.renderFilterTabs(sources);
-      this.renderResultsList();
-      saveLastSearchState({
-        query: this.currentQuery,
-        results: this.results,
-        sourceSummaries: this.sourceSummaries,
-        activeFilter: this.activeFilter,
-        durationSec: this.progressTiming?.textContent || '0.5'
-      });
+      this.switchFilterTab('ALL', allBtn);
     });
     this.filterBar.appendChild(allBtn);
 
@@ -605,21 +609,77 @@ class SearchlystWorkstation {
 
       const btn = document.createElement('button');
       btn.className = `filter-btn ${this.activeFilter === id ? 'active' : ''}`;
+      btn.dataset.filter = id;
       btn.innerHTML = `<span>${s.badge} ${s.label.toUpperCase()}</span> <span class="filter-count">[${count}]</span>`;
       btn.addEventListener('click', () => {
-        this.activeFilter = id;
-        this.renderFilterTabs(sources);
-        this.renderResultsList();
-        saveLastSearchState({
-          query: this.currentQuery,
-          results: this.results,
-          sourceSummaries: this.sourceSummaries,
-          activeFilter: this.activeFilter,
-          durationSec: this.progressTiming?.textContent || '0.5'
-        });
+        this.switchFilterTab(id, btn);
       });
       this.filterBar.appendChild(btn);
     });
+
+    // Ensure the initial view shows the active tab
+    if (this.activeFilter === 'ALL') {
+      this.filterBarWrapper.scrollTo({ left: 0, behavior: 'instant' });
+    } else {
+      const activeBtn = this.filterBar.querySelector(`.filter-btn[data-filter="${this.activeFilter}"]`);
+      if (activeBtn) {
+        this.scrollToFilterTab(activeBtn);
+      }
+    }
+  }
+
+  switchFilterTab(targetFilter, btn) {
+    this.activeFilter = targetFilter;
+
+    // Update active class on tab buttons without wiping DOM
+    const allBtns = this.filterBar.querySelectorAll('.filter-btn');
+    allBtns.forEach(b => {
+      if (b.dataset.filter === targetFilter) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    // Smoothly reposition the bar so clicked source moves to the left and reveals next sources
+    this.scrollToFilterTab(btn);
+
+    // Render results for this filter
+    this.renderResultsList();
+
+    // Persist search session state
+    saveLastSearchState({
+      query: this.currentQuery,
+      results: this.results,
+      sourceSummaries: this.sourceSummaries,
+      activeFilter: this.activeFilter,
+      durationSec: this.progressTiming?.textContent || '0.5'
+    });
+  }
+
+  scrollToFilterTab(btn) {
+    if (!this.filterBarWrapper || !btn) return;
+
+    const filterId = btn.dataset.filter;
+    if (filterId === 'ALL') {
+      this.filterBarWrapper.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const wrapper = this.filterBarWrapper;
+    const btnLeft = btn.offsetLeft;
+
+    // For first source (e.g. Google), keep at start so 'ALL' remains visible
+    if (btnLeft < 90) {
+      wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // For subsequent sources (YouTube, GitHub, Reddit, Stack Overflow):
+    // Move the bar to the left: position the clicked source ~20px from the left edge
+    // This immediately brings all following sources (Reddit, Stack Overflow) into view!
+    const targetLeft = Math.max(0, btnLeft - 20);
+    wrapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
   }
 
   renderResultsList() {

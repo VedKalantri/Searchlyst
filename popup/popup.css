@@ -733,12 +733,21 @@ body {
    ========================================================================== */
 .filter-bar-wrapper {
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
-  padding-bottom: 2px;
+  padding: 1px 0 5px 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .filter-bar-wrapper::-webkit-scrollbar {
   height: 3px;
+}
+
+.filter-bar-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-surface-subtle);
+  border-radius: 2px;
 }
 
 .filter-bar-wrapper::-webkit-scrollbar-thumb {
@@ -746,15 +755,20 @@ body {
   border-radius: 2px;
 }
 
+.filter-bar-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
 .filter-bar {
   display: inline-flex;
   gap: 6px;
+  align-items: center;
 }
 
 .filter-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 4.5px;
   height: 26px;
   padding: 0 10px;
   background-color: var(--bg-surface);
@@ -765,18 +779,26 @@ body {
   font-size: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--trans-fast);
+  flex-shrink: 0;
+  user-select: none;
+  transition: background-color var(--trans-fast), color var(--trans-fast), border-color var(--trans-fast), transform var(--trans-fast);
 }
 
 .filter-btn:hover {
   border-color: var(--border-strong);
   color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
+}
+
+.filter-btn:active {
+  transform: scale(0.97);
 }
 
 .filter-btn.active {
   background-color: var(--text-primary);
   border-color: var(--text-primary);
   color: var(--bg-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .filter-count {
