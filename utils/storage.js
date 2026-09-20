@@ -96,3 +96,80 @@ export async function addRecentSearch(query) {
   }
   return updated;
 }
+
+const LAST_SEARCH_KEY = 'searchlyst_last_search_state';
+
+let memoryLastSearch = null;
+
+export async function getLastSearchState() {
+  if (isChromeStorageAvailable()) {
+    return new Promise((resolve) => {
+      chrome.storage.local.get([LAST_SEARCH_KEY], (res) => {
+        resolve(res[LAST_SEARCH_KEY] || null);
+      });
+    });
+  }
+
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(LAST_SEARCH_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  return memoryLastSearch;
+}
+
+export async function saveLastSearchState(state) {
+  if (!state || !state.query) return null;
+
+  const payload = {
+    query: state.query,
+    results: state.results || [],
+    sourceSummaries: state.sourceSummaries || {},
+    activeFilter: state.activeFilter || 'ALL',
+    durationSec: state.durationSec || '0.5',
+    timestamp: Date.now()
+  };
+
+  if (isChromeStorageAvailable()) {
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ [LAST_SEARCH_KEY]: payload }, () => {
+        resolve(payload);
+      });
+    });
+  }
+
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(LAST_SEARCH_KEY, JSON.stringify(payload));
+    } catch (e) {
+      console.warn('LocalStorage save failed:', e);
+    }
+  } else {
+    memoryLastSearch = payload;
+  }
+  return payload;
+}
+
+export async function clearLastSearchState() {
+  if (isChromeStorageAvailable()) {
+    return new Promise((resolve) => {
+      chrome.storage.local.remove([LAST_SEARCH_KEY], () => {
+        resolve();
+      });
+    });
+  }
+
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.removeItem(LAST_SEARCH_KEY);
+    } catch (e) {
+      console.warn('LocalStorage remove failed:', e);
+    }
+  } else {
+    memoryLastSearch = null;
+  }
+}

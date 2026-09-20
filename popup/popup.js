@@ -5,7 +5,7 @@
  */
 
 import { SOURCES, SOURCE_ORDER, SAMPLE_QUERIES } from '../utils/constants.js';
-import { getSettings, saveSettings, getRecentSearches, addRecentSearch } from '../utils/storage.js';
+import { getSettings, saveSettings, getRecentSearches, addRecentSearch, getLastSearchState, saveLastSearchState, clearLastSearchState } from '../utils/storage.js';
 import { escapeHtml } from '../utils/sanitize.js';
 
 // Direct provider fallbacks for standalone preview testing
@@ -84,7 +84,49 @@ class SearchlystWorkstation {
     await this.renderRecentSearches();
     this.bindEvents();
 
-    this.updateStatus('READY');
+    const restored = await this.restoreLastSearchState();
+    if (!restored) {
+      this.updateStatus('READY');
+    }
+  }
+
+  async restoreLastSearchState() {
+    try {
+      const last = await getLastSearchState();
+      if (!last || !last.query || !last.results || last.results.length === 0) {
+        return false;
+      }
+
+      // Restore if within last 4 hours
+      const ageMs = Date.now() - (last.timestamp || 0);
+      if (ageMs > 4 * 60 * 60 * 1000) {
+        await clearLastSearchState();
+        return false;
+      }
+
+      this.currentQuery = last.query;
+      this.searchInput.value = last.query;
+      if (this.clearBtn) this.clearBtn.classList.remove('hidden');
+
+      this.results = last.results;
+      this.sourceSummaries = last.sourceSummaries || {};
+      this.activeFilter = last.activeFilter || 'ALL';
+
+      const sourcesUsed = Object.keys(this.sourceSummaries).length > 0
+        ? Object.keys(this.sourceSummaries)
+        : SOURCE_ORDER.filter(id => this.enabledSources.has(id));
+
+      this.showResultsContainer();
+      this.renderCompletedChecklist(sourcesUsed, last.durationSec || '0.5');
+      this.renderFilterTabs(sourcesUsed);
+      this.renderResultsList();
+
+      this.updateStatus(`${this.results.length} RESULTS RESTORED`);
+      return true;
+    } catch (e) {
+      console.warn('[Searchlyst] Failed to restore search state:', e);
+      return false;
+    }
   }
 
   applyPlatformShortcut() {
@@ -282,6 +324,7 @@ class SearchlystWorkstation {
       this.searchInput.value = '';
       this.clearBtn.classList.add('hidden');
       this.searchInput.focus();
+      clearLastSearchState();
       this.showEmptyState();
     });
 
@@ -303,6 +346,7 @@ class SearchlystWorkstation {
         if (this.searchInput.value) {
           this.searchInput.value = '';
           this.clearBtn.classList.add('hidden');
+          clearLastSearchState();
           this.showEmptyState();
         }
       }
@@ -329,7 +373,8 @@ class SearchlystWorkstation {
         }
       } else if (e.key === 'Enter' && this.selectedIndex >= 0 && document.activeElement !== this.searchInput) {
         e.preventDefault();
-        this.openSelectedResult();
+        const inBackground = e.metaKey || e.ctrlKey;
+        this.openSelectedResult(inBackground);
       } else if ((e.key === 'c' || e.key === 'C') && this.selectedIndex >= 0 && document.activeElement !== this.searchInput) {
         e.preventDefault();
         this.copySelectedResult();
@@ -350,6 +395,9 @@ class SearchlystWorkstation {
     this.resultsContainer.classList.add('hidden');
     this.emptyState.classList.remove('hidden');
     this.selectedIndex = -1;
+    this.currentQuery = '';
+    this.results = [];
+    clearLastSearchState();
     this.renderRecentSearches();
     this.updateStatus('READY');
   }
@@ -438,6 +486,14 @@ class SearchlystWorkstation {
       this.renderResultsList();
 
       this.updateStatus(`${this.results.length} RESULTS FOUND (${durationSec}s)`);
+
+      await saveLastSearchState({
+        query: this.currentQuery,
+        results: this.results,
+        sourceSummaries: this.sourceSummaries,
+        activeFilter: this.activeFilter,
+        durationSec: durationSec
+      });
     } catch (err) {
       console.error('[Searchlyst] Search error:', err);
       this.isSearching = false;
@@ -531,6 +587,13 @@ class SearchlystWorkstation {
       this.activeFilter = 'ALL';
       this.renderFilterTabs(sources);
       this.renderResultsList();
+      saveLastSearchState({
+        query: this.currentQuery,
+        results: this.results,
+        sourceSummaries: this.sourceSummaries,
+        activeFilter: this.activeFilter,
+        durationSec: this.progressTiming?.textContent || '0.5'
+      });
     });
     this.filterBar.appendChild(allBtn);
 
@@ -547,6 +610,13 @@ class SearchlystWorkstation {
         this.activeFilter = id;
         this.renderFilterTabs(sources);
         this.renderResultsList();
+        saveLastSearchState({
+          query: this.currentQuery,
+          results: this.results,
+          sourceSummaries: this.sourceSummaries,
+          activeFilter: this.activeFilter,
+          durationSec: this.progressTiming?.textContent || '0.5'
+        });
       });
       this.filterBar.appendChild(btn);
     });
@@ -602,6 +672,16 @@ class SearchlystWorkstation {
         </div>
       `;
 
+      const linkEl = row.querySelector('.result-title');
+      if (linkEl) {
+        linkEl.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const inBackground = e.metaKey || e.ctrlKey || e.button === 1;
+          this.openUrl(item.url, inBackground);
+        });
+      }
+
       const copyBtn = row.querySelector('.btn-copy');
       copyBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -610,7 +690,8 @@ class SearchlystWorkstation {
 
       row.addEventListener('click', (e) => {
         if (!e.target.closest('.btn-copy')) {
-          this.openUrl(item.url);
+          const inBackground = e.metaKey || e.ctrlKey || e.button === 1;
+          this.openUrl(item.url, inBackground);
         }
       });
 
@@ -657,11 +738,11 @@ class SearchlystWorkstation {
     });
   }
 
-  openSelectedResult() {
+  openSelectedResult(inBackground = false) {
     const rows = this.resultsList.querySelectorAll('.result-row');
     if (this.selectedIndex >= 0 && this.selectedIndex < rows.length) {
       const url = rows[this.selectedIndex].dataset.url;
-      if (url) this.openUrl(url);
+      if (url) this.openUrl(url, inBackground);
     }
   }
 

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Searchlyst — Multi-Source Search",
   "short_name": "Searchlyst",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Search once. Explore everywhere. High-density, unified search aggregation across developer documentation, repositories, discussions, and video.",
   "icons": {
     "16": "assets/icons/icon-16.png",
