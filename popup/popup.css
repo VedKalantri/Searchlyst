@@ -1,72 +1,81 @@
 /**
  * Searchlyst — Modern Editorial Workstation Design System
- * Refined geometry: 6px–8px modern rounded borders, intentional hierarchy,
- * elegant surface contrast, and restrained electric vermilion accent.
+ * Defined borders, distinct surface hierarchy, modern 8px-10px rounded geometry,
+ * and restrained electric vermilion accent.
  */
 
 :root {
   /* Light Theme */
-  --bg-app: #F7F7F5;
+  --bg-app: #F5F5F2;
   --bg-surface: #FFFFFF;
-  --bg-surface-subtle: #EFEFEA;
-  --bg-surface-hover: #E8E8E2;
-  --bg-surface-active: #DFDFD8;
+  --bg-surface-subtle: #EBEBE6;
+  --bg-surface-hover: #E2E2DC;
+  --bg-surface-active: #D8D8D0;
 
-  --text-primary: #121213;
-  --text-secondary: #545450;
-  --text-muted: #848480;
+  --text-primary: #121214;
+  --text-secondary: #4A4A46;
+  --text-muted: #787874;
   --text-inverse: #FFFFFF;
 
-  --border-light: #E4E4DE;
-  --border-medium: #D0D0C8;
-  --border-strong: #909088;
+  --border-light: #DFDFD8;
+  --border-medium: #C8C8BF;
+  --border-strong: #8A8A80;
 
   --accent: #E64516;
-  --accent-hover: #D03B0E;
+  --accent-hover: #CC3A0E;
   --accent-subtle: rgba(230, 69, 22, 0.08);
-  --accent-border: rgba(230, 69, 22, 0.4);
+  --accent-border: rgba(230, 69, 22, 0.45);
 
   --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Geist", "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Consolas", Menlo, monospace;
 
   /* Modern Refined Border Radii */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-card: 12px;
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
 
   --trans-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="dark"] {
-  /* Dark Theme */
-  --bg-app: #0D0D0F;
-  --bg-surface: #151518;
-  --bg-surface-subtle: #1C1C20;
-  --bg-surface-hover: #232328;
-  --bg-surface-active: #2B2B32;
+  /* Dark Theme — Defined Surfaces & Clear Structural Borders */
+  --bg-app: #0F0F12;
+  --bg-surface: #18181D;
+  --bg-surface-subtle: #202026;
+  --bg-surface-hover: #282832;
+  --bg-surface-active: #32323E;
 
-  --text-primary: #EDEDEB;
-  --text-secondary: #9E9EA0;
-  --text-muted: #646468;
-  --text-inverse: #0D0D0F;
+  --text-primary: #F0F0EE;
+  --text-secondary: #A6A6AC;
+  --text-muted: #72727A;
+  --text-inverse: #0F0F12;
 
-  --border-light: #222228;
-  --border-medium: #303038;
-  --border-strong: #444450;
+  --border-light: #2A2A33;
+  --border-medium: #3A3A46;
+  --border-strong: #525262;
 
   --accent: #F05023;
-  --accent-hover: #FF6236;
-  --accent-subtle: rgba(240, 80, 35, 0.12);
-  --accent-border: rgba(240, 80, 35, 0.45);
+  --accent-hover: #FF6638;
+  --accent-subtle: rgba(240, 80, 35, 0.15);
+  --accent-border: rgba(240, 80, 35, 0.55);
 }
 
-/* Reset & Base */
+/* Global Reset */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* Eliminate Chrome default square focus rings */
+input, button, a {
+  outline: none !important;
+}
+
+html {
+  background-color: var(--bg-app);
+  overflow: hidden;
 }
 
 body {
@@ -83,6 +92,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   user-select: none;
+  overflow: hidden;
 }
 
 /* Base Workstation Container */
@@ -93,7 +103,8 @@ body {
   max-height: 595px;
   overflow: hidden;
   background-color: var(--bg-app);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
 }
 
 /* ==========================================================================
@@ -103,9 +114,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 13px 18px;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
+  border-top-left-radius: calc(var(--radius-md) - 1px);
+  border-top-right-radius: calc(var(--radius-md) - 1px);
 }
 
 .brand {
@@ -153,13 +166,13 @@ body {
 .kbd-badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 7px;
+  padding: 3px 8px;
   background-color: var(--bg-surface-subtle);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
@@ -169,9 +182,9 @@ body {
   justify-content: center;
   width: 30px;
   height: 30px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xs);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--trans-fast);
@@ -208,15 +221,14 @@ body {
   height: 42px;
   padding: 0 36px 0 14px;
   background-color: var(--bg-surface-subtle);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13.5px;
   font-weight: 500;
   letter-spacing: -0.01em;
   transition: border-color var(--trans-fast), background-color var(--trans-fast), box-shadow var(--trans-fast);
-  outline: none;
 }
 
 .search-input::placeholder {
@@ -279,7 +291,7 @@ body {
   color: #FFFFFF;
   font-family: var(--font-sans);
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: background-color var(--trans-fast), transform var(--trans-fast);
@@ -313,7 +325,7 @@ body {
   color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 10.5px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.03em;
   cursor: pointer;
   transition: all var(--trans-fast);
@@ -326,7 +338,7 @@ body {
 }
 
 /* ==========================================================================
-   3. SOURCE SELECTOR (Modern Rounded Controls)
+   3. SOURCE SELECTOR (Defined Rounded Controls)
    ========================================================================== */
 .sources-section {
   padding: 12px 18px 14px 18px;
@@ -344,7 +356,7 @@ body {
 .section-title {
   font-family: var(--font-mono);
   font-size: 9.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -360,7 +372,7 @@ body {
 }
 
 .sources-counter {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-secondary);
 }
 
@@ -417,7 +429,6 @@ body {
   cursor: pointer;
   text-align: left;
   transition: all var(--trans-fast);
-  outline: none;
 }
 
 .source-btn:hover {
@@ -426,7 +437,7 @@ body {
   background-color: var(--bg-surface-hover);
 }
 
-/* Active Source State: Refined Vermilion Accent Border & Subtle Fill */
+/* Active Source State: Defined Vermilion Accent Border & Subtle Fill */
 .source-btn.active {
   background-color: var(--accent-subtle);
   border-color: var(--accent-border);
@@ -437,7 +448,7 @@ body {
 .source-code {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-muted);
   line-height: 1;
 }
@@ -455,8 +466,8 @@ body {
 
 /* Modern Indicator Dot */
 .source-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   border: 1.5px solid var(--border-medium);
   background-color: transparent;
@@ -506,9 +517,9 @@ body {
 }
 
 .editorial-divider {
-  width: 24px;
-  height: 2.5px;
-  border-radius: 1px;
+  width: 26px;
+  height: 3px;
+  border-radius: 2px;
   background-color: var(--accent);
   margin-bottom: 12px;
 }
@@ -516,7 +527,7 @@ body {
 .empty-badge {
   font-family: var(--font-mono);
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--text-muted);
   margin-bottom: 4px;
@@ -525,7 +536,7 @@ body {
 .empty-headline {
   font-family: var(--font-sans);
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.25;
   color: var(--text-primary);
@@ -563,7 +574,7 @@ body {
 .suggestions-label {
   font-family: var(--font-mono);
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -574,14 +585,14 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .suggestion-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 10px;
+  padding: 8px 12px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
@@ -600,7 +611,7 @@ body {
 
 .suggestion-arrow {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
   transition: transform var(--trans-fast);
 }
 
@@ -616,17 +627,18 @@ body {
   justify-content: center;
   gap: 8px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 9.5px;
   color: var(--text-muted);
 }
 
 .editorial-footer-note kbd {
-  padding: 2px 5px;
+  padding: 2px 6px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-xs);
   color: var(--text-secondary);
   font-size: 9px;
+  font-weight: 600;
 }
 
 /* ==========================================================================
@@ -672,7 +684,7 @@ body {
 .progress-checklist {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .checklist-row {
@@ -732,7 +744,7 @@ body {
 
 .filter-bar {
   display: inline-flex;
-  gap: 5px;
+  gap: 6px;
 }
 
 .filter-btn {
@@ -740,7 +752,7 @@ body {
   align-items: center;
   gap: 4px;
   height: 26px;
-  padding: 0 9px;
+  padding: 0 10px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-sm);
@@ -788,7 +800,6 @@ body {
   cursor: pointer;
   transition: all var(--trans-fast);
   position: relative;
-  outline: none;
 }
 
 .result-row:hover {
@@ -870,7 +881,7 @@ body {
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 2px 7px;
   transition: all var(--trans-fast);
 }
 
@@ -970,6 +981,8 @@ body {
   font-family: var(--font-mono);
   font-size: 9.5px;
   color: var(--text-muted);
+  border-bottom-left-radius: calc(var(--radius-md) - 1px);
+  border-bottom-right-radius: calc(var(--radius-md) - 1px);
 }
 
 .status-left {

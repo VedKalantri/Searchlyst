@@ -3,8 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Searchlyst — Multi-Source Search</title>
-  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="popup.css?v=1.0.2">
+  <style>
+    /* Critical inlined fallback to guarantee modern rounded geometry & visible borders survive Chrome caching */
+    :root {
+      --radius-xs: 5px;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 12px;
+    }
+    input, button, a {
+      outline: none !important;
+    }
+    html, body {
+      overflow: hidden !important;
+    }
+    .workstation {
+      border-radius: 10px !important;
+      overflow: hidden !important;
+    }
+    .search-input,
+    .btn-primary,
+    .btn-secondary,
+    .source-btn,
+    .suggestion-item,
+    .result-row,
+    .filter-btn,
+    .search-progress-card {
+      border-radius: 8px !important;
+    }
+  </style>
 </head>
 <body>
   <div class="workstation" id="app">
@@ -179,7 +211,7 @@
         <span id="statusText">READY</span>
       </div>
       <div class="status-right">
-        <span class="status-version">V1.0.0</span>
+        <span class="status-version">V1.0.2</span>
       </div>
     </footer>
   </div>
