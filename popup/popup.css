@@ -732,31 +732,61 @@ body {
    6. FILTER TAB BAR
    ========================================================================== */
 .filter-bar-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 2px 0 6px 0;
+}
+
+.filter-nav-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--trans-fast);
+  user-select: none;
+}
+
+.filter-nav-btn:hover:not(:disabled) {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.filter-nav-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.filter-nav-btn:disabled,
+.filter-nav-btn.disabled {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
+}
+
+.filter-bar-scroll {
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  padding: 1px 0 5px 0;
-  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
 }
 
-.filter-bar-wrapper::-webkit-scrollbar {
-  height: 3px;
-}
-
-.filter-bar-wrapper::-webkit-scrollbar-track {
-  background: var(--bg-surface-subtle);
-  border-radius: 2px;
-}
-
-.filter-bar-wrapper::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: 2px;
-}
-
-.filter-bar-wrapper::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+.filter-bar-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .filter-bar {

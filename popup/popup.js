@@ -65,6 +65,9 @@ class SearchlystWorkstation {
     this.progressTiming = document.getElementById('progressTiming');
     this.progressChecklist = document.getElementById('progressChecklist');
     this.filterBarWrapper = document.getElementById('filterBarWrapper');
+    this.filterBarScroll = document.getElementById('filterBarScroll');
+    this.filterNavPrev = document.getElementById('filterNavPrev');
+    this.filterNavNext = document.getElementById('filterNavNext');
     this.filterBar = document.getElementById('filterBar');
     this.resultsList = document.getElementById('resultsList');
     this.backToHomeBtn = document.getElementById('backToHomeBtn');
@@ -390,13 +393,34 @@ class SearchlystWorkstation {
     this.backToHomeBtn.addEventListener('click', () => this.showEmptyState());
     this.openAllFilteredBtn.addEventListener('click', () => this.openFilteredInTabs());
 
-    if (this.filterBarWrapper) {
-      this.filterBarWrapper.addEventListener('wheel', (e) => {
-        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    if (this.filterNavPrev) {
+      this.filterNavPrev.addEventListener('click', () => this.scrollFilterBarBy(-1));
+    }
+    if (this.filterNavNext) {
+      this.filterNavNext.addEventListener('click', () => this.scrollFilterBarBy(1));
+    }
+
+    const scrollContainer = this.filterBarScroll || this.filterBarWrapper;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('wheel', (e) => {
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (delta !== 0) {
           e.preventDefault();
-          this.filterBarWrapper.scrollLeft += e.deltaY;
+          if (this._scrollAnimId) {
+            cancelAnimationFrame(this._scrollAnimId);
+            this._scrollAnimId = null;
+          }
+          const maxScroll = Math.max(0, scrollContainer.scrollWidth - scrollContainer.clientWidth);
+          scrollContainer.scrollLeft = Math.max(0, Math.min(maxScroll, scrollContainer.scrollLeft + delta * 0.8));
+          this.updateFilterNavButtons();
         }
       }, { passive: false });
+
+      scrollContainer.addEventListener('scroll', () => {
+        if (!this._scrollAnimId) {
+          this.updateFilterNavButtons();
+        }
+      }, { passive: true });
     }
   }
 
@@ -407,6 +431,9 @@ class SearchlystWorkstation {
     this.currentQuery = '';
     this.results = [];
     this.activeFilter = 'ALL';
+    const scrollContainer = this.filterBarScroll || this.filterBarWrapper;
+    if (scrollContainer) scrollContainer.scrollLeft = 0;
+    this.updateFilterNavButtons();
     clearLastSearchState();
     this.renderRecentSearches();
     this.updateStatus('READY');
@@ -595,6 +622,8 @@ class SearchlystWorkstation {
     const allBtn = document.createElement('button');
     allBtn.className = `filter-btn ${this.activeFilter === 'ALL' ? 'active' : ''}`;
     allBtn.dataset.filter = 'ALL';
+    allBtn.setAttribute('role', 'tab');
+    allBtn.setAttribute('aria-selected', (this.activeFilter === 'ALL').toString());
     allBtn.innerHTML = `<span>ALL</span> <span class="filter-count">[${this.results.length}]</span>`;
     allBtn.addEventListener('click', () => {
       this.switchFilterTab('ALL', allBtn);
@@ -610,6 +639,8 @@ class SearchlystWorkstation {
       const btn = document.createElement('button');
       btn.className = `filter-btn ${this.activeFilter === id ? 'active' : ''}`;
       btn.dataset.filter = id;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', (this.activeFilter === id).toString());
       btn.innerHTML = `<span>${s.badge} ${s.label.toUpperCase()}</span> <span class="filter-count">[${count}]</span>`;
       btn.addEventListener('click', () => {
         this.switchFilterTab(id, btn);
@@ -617,35 +648,40 @@ class SearchlystWorkstation {
       this.filterBar.appendChild(btn);
     });
 
-    // Ensure the initial view shows the active tab
+    const scrollContainer = this.filterBarScroll || this.filterBarWrapper;
     if (this.activeFilter === 'ALL') {
-      this.filterBarWrapper.scrollTo({ left: 0, behavior: 'instant' });
+      if (scrollContainer) scrollContainer.scrollLeft = 0;
+      this.updateFilterNavButtons();
     } else {
       const activeBtn = this.filterBar.querySelector(`.filter-btn[data-filter="${this.activeFilter}"]`);
       if (activeBtn) {
         this.scrollToFilterTab(activeBtn);
+      } else {
+        this.updateFilterNavButtons();
       }
     }
   }
 
   switchFilterTab(targetFilter, btn) {
+    if (this.activeFilter === targetFilter) return;
+
     this.activeFilter = targetFilter;
 
-    // Update active class on tab buttons without wiping DOM
+    // Update active class on tab buttons smoothly
     const allBtns = this.filterBar.querySelectorAll('.filter-btn');
     allBtns.forEach(b => {
-      if (b.dataset.filter === targetFilter) {
-        b.classList.add('active');
-      } else {
-        b.classList.remove('active');
-      }
+      const isActive = b.dataset.filter === targetFilter;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive.toString());
     });
 
-    // Smoothly reposition the bar so clicked source moves to the left and reveals next sources
+    // Smoothly reposition the bar in either direction (left or right)
     this.scrollToFilterTab(btn);
 
-    // Render results for this filter
-    this.renderResultsList();
+    // Render results on the next animation frame to prevent main-thread lag during scroll
+    requestAnimationFrame(() => {
+      this.renderResultsList();
+    });
 
     // Persist search session state
     saveLastSearchState({
@@ -658,28 +694,102 @@ class SearchlystWorkstation {
   }
 
   scrollToFilterTab(btn) {
-    if (!this.filterBarWrapper || !btn) return;
+    const scrollContainer = this.filterBarScroll || this.filterBarWrapper;
+    if (!scrollContainer || !btn) return;
 
     const filterId = btn.dataset.filter;
+    const maxScroll = Math.max(0, scrollContainer.scrollWidth - scrollContainer.clientWidth);
+
+    let targetLeft = 0;
     if (filterId === 'ALL') {
-      this.filterBarWrapper.scrollTo({ left: 0, behavior: 'smooth' });
+      targetLeft = 0;
+    } else {
+      // True bi-directional centering:
+      // Center the clicked button inside the visible scroll container
+      // This works symmetrically in both directions (left-to-right AND right-to-left)
+      const btnCenter = btn.offsetLeft + (btn.offsetWidth / 2);
+      const containerHalf = scrollContainer.clientWidth / 2;
+      const idealLeft = btnCenter - containerHalf;
+      targetLeft = Math.max(0, Math.min(maxScroll, idealLeft));
+    }
+
+    this.smoothScrollTo(scrollContainer, targetLeft, 240);
+  }
+
+  scrollFilterBarBy(direction) {
+    const scrollContainer = this.filterBarScroll || this.filterBarWrapper;
+    if (!scrollContainer) return;
+    const delta = direction * 150;
+    const maxScroll = Math.max(0, scrollContainer.scrollWidth - scrollContainer.clientWidth);
+    const targetLeft = Math.max(0, Math.min(maxScroll, scrollContainer.scrollLeft + delta));
+    this.smoothScrollTo(scrollContainer, targetLeft, 220);
+  }
+
+  smoothScrollTo(container, targetLeft, duration = 240) {
+    if (!container) return;
+    const startLeft = container.scrollLeft;
+    const distance = targetLeft - startLeft;
+
+    if (Math.abs(distance) < 2) {
+      container.scrollLeft = targetLeft;
+      this.updateFilterNavButtons();
       return;
     }
 
-    const wrapper = this.filterBarWrapper;
-    const btnLeft = btn.offsetLeft;
-
-    // For first source (e.g. Google), keep at start so 'ALL' remains visible
-    if (btnLeft < 90) {
-      wrapper.scrollTo({ left: 0, behavior: 'smooth' });
-      return;
+    if (this._scrollAnimId) {
+      cancelAnimationFrame(this._scrollAnimId);
+      this._scrollAnimId = null;
     }
 
-    // For subsequent sources (YouTube, GitHub, Reddit, Stack Overflow):
-    // Move the bar to the left: position the clicked source ~20px from the left edge
-    // This immediately brings all following sources (Reddit, Stack Overflow) into view!
-    const targetLeft = Math.max(0, btnLeft - 20);
-    wrapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
+    const startTime = performance.now();
+    // 60fps ease-out-cubic for snappy start and butter-smooth landing
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+    const step = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = easeOutCubic(progress);
+      container.scrollLeft = Math.round(startLeft + distance * eased);
+      this.updateFilterNavButtons();
+
+      if (progress < 1) {
+        this._scrollAnimId = requestAnimationFrame(step);
+      } else {
+        container.scrollLeft = targetLeft;
+        this._scrollAnimId = null;
+        this.updateFilterNavButtons();
+      }
+    };
+
+    this._scrollAnimId = requestAnimationFrame(step);
+  }
+
+  updateFilterNavButtons() {
+    const scrollContainer = this.filterBarScroll || this.filterBarWrapper;
+    if (!scrollContainer) return;
+
+    const maxScroll = Math.max(0, scrollContainer.scrollWidth - scrollContainer.clientWidth);
+    const scrollLeft = scrollContainer.scrollLeft;
+
+    if (this.filterNavPrev) {
+      if (scrollLeft > 6) {
+        this.filterNavPrev.classList.remove('disabled');
+        this.filterNavPrev.removeAttribute('disabled');
+      } else {
+        this.filterNavPrev.classList.add('disabled');
+        this.filterNavPrev.setAttribute('disabled', 'true');
+      }
+    }
+
+    if (this.filterNavNext) {
+      if (scrollLeft < maxScroll - 6) {
+        this.filterNavNext.classList.remove('disabled');
+        this.filterNavNext.removeAttribute('disabled');
+      } else {
+        this.filterNavNext.classList.add('disabled');
+        this.filterNavNext.setAttribute('disabled', 'true');
+      }
+    }
   }
 
   renderResultsList() {
