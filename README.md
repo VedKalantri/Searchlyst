@@ -6,11 +6,24 @@
   <p>A Swiss-editorial research workstation built as a Google Chrome Extension (Manifest V3).</p>
   <p>
     <img src="https://img.shields.io/badge/Manifest-V3-orange?style=flat-square" alt="Manifest V3" />
-    <img src="https://img.shields.io/badge/Chrome_Extension-v1.0.9-blue?style=flat-square" alt="Version 1.0.9" />
+    <img src="https://img.shields.io/badge/Chrome_Extension-v1.1.1-blue?style=flat-square" alt="Version 1.1.1" />
     <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
     <img src="https://img.shields.io/badge/Zero_Keys_Required-100%25_Out_of_the_Box-brightgreen?style=flat-square" alt="Zero Keys Required" />
   </p>
 </div>
+
+---
+
+## 📸 Interface Preview
+
+<p align="center">
+  <img src="assets/screenshots/searchlyst-overview.png" width="48%" alt="Searchlyst Workstation Overview" />
+  &nbsp;
+  <img src="assets/screenshots/searchlyst-search-results.png" width="48%" alt="Multi-Source Aggregated Search" />
+</p>
+<p align="center">
+  <em><strong>Left:</strong> Clean editorial research workstation with active source selector chips. <strong>Right:</strong> Live multi-source aggregation with real-time status and interactive filter carousel.</em>
+</p>
 
 ---
 
