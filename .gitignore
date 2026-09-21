@@ -5,6 +5,11 @@
 node_modules/
 *.log
 
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
 # OS & Editor
 .DS_Store
 Thumbs.db

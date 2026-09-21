@@ -74,15 +74,17 @@ input, button, a {
 }
 
 html {
-  background-color: var(--bg-app);
+  background-color: transparent !important;
+  margin: 0;
+  padding: 2px;
   overflow: hidden !important;
 }
 
 body {
-  width: 480px;
+  width: 476px;
   min-width: 380px;
   max-width: 520px;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   background-color: var(--bg-app);
   color: var(--text-primary);
@@ -94,6 +96,8 @@ body {
   user-select: none;
   overflow: hidden !important;
   max-height: 520px;
+  border: 1.5px solid var(--border-medium);
+  border-radius: 12px;
 }
 
 /* Base Workstation Container */
