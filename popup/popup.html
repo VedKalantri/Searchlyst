@@ -7,26 +7,30 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Searchlyst — Multi-Source Search</title>
-  <link rel="stylesheet" href="popup.css?v=1.0.7">
+  <link rel="stylesheet" href="popup.css?v=1.0.8">
   <style>
-    /* Critical inlined fallback to guarantee modern rounded geometry & visible borders survive Chrome caching */
+    /* Modern minimalist geometry without fake inner borders */
     :root {
-      --radius-xs: 6px;
-      --radius-sm: 10px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
+      --radius-xs: 4px;
+      --radius-sm: 8px;
+      --radius-md: 10px;
+      --radius-lg: 12px;
     }
     input, button, a {
       outline: none !important;
     }
     html, body {
+      margin: 0 !important;
+      padding: 0 !important;
       overflow: hidden !important;
-      max-height: 560px !important;
+      max-height: 520px !important;
+      background-color: var(--bg-app);
     }
     .workstation {
-      border-radius: 16px !important;
+      width: 100% !important;
+      border: none !important;
+      border-radius: 0 !important;
       overflow: hidden !important;
-      border: 1.5px solid #404052 !important;
     }
     .search-input,
     .btn-primary,
@@ -35,8 +39,9 @@
     .suggestion-item,
     .result-row,
     .filter-btn,
+    .filter-nav-btn,
     .search-progress-card {
-      border-radius: 10px !important;
+      border-radius: 8px !important;
     }
   </style>
 </head>
@@ -225,7 +230,7 @@
         <span id="statusText">READY</span>
       </div>
       <div class="status-right">
-        <span class="status-version">V1.0.7</span>
+        <span class="status-version">V1.0.8</span>
       </div>
     </footer>
   </div>
