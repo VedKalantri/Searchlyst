@@ -7,9 +7,9 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Searchlyst — Multi-Source Search</title>
-  <link rel="stylesheet" href="popup.css?v=1.0.9">
+  <link rel="stylesheet" href="popup.css?v=1.1.0">
   <style>
-    /* Modern minimalist geometry with clean rounded outer frame */
+    /* Modern minimalist geometry — clean single outer window, no double borders */
     :root {
       --radius-xs: 4px;
       --radius-sm: 8px;
@@ -19,20 +19,14 @@
     input, button, a {
       outline: none !important;
     }
-    html {
-      background-color: transparent !important;
+    html, body {
       margin: 0 !important;
-      padding: 2px !important;
-      overflow: hidden !important;
-    }
-    body {
-      margin: 0 auto !important;
       padding: 0 !important;
+      border: none !important;
+      outline: none !important;
       overflow: hidden !important;
       max-height: 520px !important;
       background-color: var(--bg-app) !important;
-      border: 1.5px solid var(--border-medium) !important;
-      border-radius: 12px !important;
     }
     .workstation {
       width: 100% !important;
@@ -40,16 +34,28 @@
       border-radius: 0 !important;
       overflow: hidden !important;
     }
-    .search-input,
+    .search-input {
+      border-radius: 10px !important;
+    }
     .btn-primary,
-    .btn-secondary,
-    .source-btn,
-    .suggestion-item,
-    .result-row,
-    .filter-btn,
-    .filter-nav-btn,
-    .search-progress-card {
+    .btn-secondary {
       border-radius: 8px !important;
+    }
+    .source-btn {
+      border-radius: 8px !important;
+    }
+    .suggestion-item {
+      border-radius: 8px !important;
+    }
+    .result-row {
+      border-radius: 10px !important;
+    }
+    .filter-btn,
+    .filter-nav-btn {
+      border-radius: 8px !important;
+    }
+    .search-progress-card {
+      border-radius: 10px !important;
     }
   </style>
 </head>
@@ -238,7 +244,7 @@
         <span id="statusText">READY</span>
       </div>
       <div class="status-right">
-        <span class="status-version">V1.0.9</span>
+        <span class="status-version">V1.1.0</span>
       </div>
     </footer>
   </div>
