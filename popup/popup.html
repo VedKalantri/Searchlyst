@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Searchlyst — Multi-Source Search</title>
-  <link rel="stylesheet" href="popup.css?v=1.1.0">
+  <link rel="stylesheet" href="popup.css?v=1.1.1">
   <style>
     /* Modern minimalist geometry — clean single outer window, no double borders */
     :root {
@@ -34,6 +34,12 @@
       border-radius: 0 !important;
       overflow: hidden !important;
     }
+    .header {
+      border-radius: 0 !important;
+    }
+    .status-bar {
+      border-radius: 0 !important;
+    }
     .search-input {
       border-radius: 10px !important;
     }
@@ -50,7 +56,9 @@
     .result-row {
       border-radius: 10px !important;
     }
-    .filter-btn,
+    .filter-btn {
+      border-radius: 100px !important;
+    }
     .filter-nav-btn {
       border-radius: 8px !important;
     }
@@ -244,7 +252,7 @@
         <span id="statusText">READY</span>
       </div>
       <div class="status-right">
-        <span class="status-version">V1.1.0</span>
+        <span class="status-version">V1.1.1</span>
       </div>
     </footer>
   </div>

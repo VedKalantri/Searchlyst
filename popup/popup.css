@@ -122,8 +122,6 @@ body {
   padding: 10px 16px;
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
-  border-top-left-radius: calc(var(--radius-lg) - 1.5px);
-  border-top-right-radius: calc(var(--radius-lg) - 1.5px);
 }
 
 .brand {
@@ -1041,8 +1039,6 @@ body {
   font-family: var(--font-mono);
   font-size: 9.5px;
   color: var(--text-muted);
-  border-bottom-left-radius: calc(var(--radius-lg) - 1.5px);
-  border-bottom-right-radius: calc(var(--radius-lg) - 1.5px);
 }
 
 .status-left {
